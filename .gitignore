@@ -13,3 +13,4 @@
 *.pyc
 __pycache__/
 .temp_vocal/
+.score_accompaniment.json
