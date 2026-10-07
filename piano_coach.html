@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>空拍 (Pause ll) - 呂允鋼琴教練 (MuseScore 4 完美對齊版)</title>
+  <title>空拍 (Pause ll) - 呂允鋼琴教練 (真實平台鋼琴音色版)</title>
+  <!-- 引入真實錄音取樣平台鋼琴音色庫 -->
+  <script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
   <style>
     :root {
       --bg: #0b0d13;
@@ -42,7 +44,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     header h1 {
@@ -74,9 +76,42 @@
     .main-layout {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       width: 100%;
       max-width: 980px;
+    }
+
+    /* 音色引擎與狀態列 */
+    .engine-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    .sound-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .sound-badge.ready {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.4);
     }
 
     /* 頂部進度條 */
@@ -180,20 +215,6 @@
       border-color: var(--accent);
     }
 
-    /* 提示通知 */
-    .callout-info {
-      background: rgba(37, 99, 235, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 13px;
-      color: #93c5fd;
-      line-height: 1.5;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
     /* 核心舞台卡片 */
     .stage-card {
       background: var(--card-bg);
@@ -217,6 +238,11 @@
       background: rgba(16, 185, 129, 0.2);
     }
 
+    .song-stage.rest-breathe {
+      border: 1px dashed var(--accent);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
     .measure-badge {
       display: inline-block;
       font-size: 12px;
@@ -232,7 +258,7 @@
     .phrase-line {
       font-size: 18px;
       color: var(--text-muted);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-weight: 500;
       min-height: 28px;
     }
@@ -249,7 +275,7 @@
       font-size: 16px;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .lh-indicator {
@@ -260,10 +286,23 @@
       color: #f472b6;
       font-size: 12px;
       font-weight: 700;
-      padding: 3px 10px;
+      padding: 3px 12px;
       border-radius: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       border: 1px solid rgba(236, 72, 153, 0.3);
+    }
+
+    .pedal-rest-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #7dd3fc;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 10px;
+      margin-bottom: 12px;
     }
 
     .key-target {
@@ -271,7 +310,7 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      margin: 6px 0 14px;
+      margin: 6px 0 12px;
     }
 
     .key-badge {
@@ -302,7 +341,7 @@
     .next-preview {
       font-size: 13px;
       color: var(--text-muted);
-      margin-top: 10px;
+      margin-top: 8px;
       background: rgba(255,255,255,0.03);
       padding: 6px 14px;
       border-radius: 20px;
@@ -462,10 +501,21 @@
 
   <header>
     <h1>呂允《空拍 Pause ll》鋼琴教練 <span class="badge-musescore">MuseScore 4 完美對齊</span></h1>
-    <p>敲擊 MacBook 鍵盤即可彈奏，音高、低音、和弦琶音與 MuseScore 4 播放 100% 一致</p>
+    <p>支援真實史坦威平台鋼琴取樣音色、踏板自然共鳴與 3/4 拍慢板空拍呼吸感</p>
   </header>
 
   <div class="main-layout">
+    <!-- 音色引擎狀態列 -->
+    <div class="engine-status-bar">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span>🎹 音色引擎：</span>
+        <span class="sound-badge" id="badgeSoundEngine">⏳ 正在連線史坦威平台鋼琴取樣庫...</span>
+      </div>
+      <div style="color:var(--text-muted); font-size:12px;">
+        ✨ 具備延音踏板效果 (Sustain Pedal) & 小節間「空拍休止」呼吸留白
+      </div>
+    </div>
+
     <!-- 頂部進度條與段落導航 -->
     <div class="progress-bar-container">
       <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); font-weight:700;">
@@ -493,24 +543,19 @@
       </div>
 
       <div class="btn-group">
-        <button class="pill-btn active-accent" id="btnAutoPlay">▶️ 自動演奏試聽</button>
+        <button class="pill-btn active-accent" id="btnAutoPlay">▶️ 自動演奏試聽 (真實慢板節奏)</button>
       </div>
-    </div>
-
-    <!-- 提示通知 -->
-    <div class="callout-info" id="calloutNotice">
-      <span>💡</span>
-      <span id="noticeText">目前模式：<b>MuseScore 4 琴譜伴奏模式</b>。你敲出的每個音，就是 MuseScore 4 裡面寫的鋼琴音（包含左手低音與右手分解琶音）！</span>
     </div>
 
     <!-- 舞台核心 -->
     <div class="stage-card">
       <div class="song-stage" id="stageBlock">
-        <div class="measure-badge" id="lblMeasure">第 1 小節 · 3/4 拍</div>
+        <div class="measure-badge" id="lblMeasure">第 1 小節 · 3/4 拍慢板</div>
         <div class="phrase-line" id="lblPhraseLine">歌詞對照：「不要說 他已遠走」</div>
         <div class="current-chord-title" id="lblChordTitle">Dbadd9</div>
         <div class="current-note-info" id="lblNoteInfo">第 1 拍音符：Eb4 (降Re)</div>
-        <div class="lh-indicator" id="lblLhBass">左手低音連動：Db3 咚～～</div>
+        <div class="lh-indicator" id="lblLhBass">左手低音連動：Db3 咚～～ (踏板共鳴)</div>
+        <div class="pedal-rest-hint" id="lblBreatheHint">🌿 踏板踩下：低音持續 4 秒共鳴</div>
 
         <div class="key-target">
           <div class="key-badge" id="keyBadge">E</div>
@@ -544,21 +589,51 @@
 
   <script>
     // -------------------------------------------------------------
-    // 1. 高擬真平台鋼琴合成器 (立體聲 + 踏板共鳴 + 瞬態敲擊)
+    // 1. 專業級音訊引擎 (SoundFont 真實取樣 + 物理建模備援)
     // -------------------------------------------------------------
     let audioCtx = null;
+    let realPiano = null; // Soundfont acoustic_grand_piano
 
     function initAudio() {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        loadRealPianoSoundfont();
       }
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
     }
 
-    function playAcousticPianoNote(freq, isBass = false, duration = 2.6, gainLevel = 0.45) {
-      initAudio();
+    function loadRealPianoSoundfont() {
+      if (typeof Soundfont !== 'undefined' && audioCtx) {
+        Soundfont.instrument(audioCtx, 'acoustic_grand_piano', { soundfont: 'FluidR3_GM' })
+          .then(function(piano) {
+            realPiano = piano;
+            const b = document.getElementById('badgeSoundEngine');
+            if (b) {
+              b.textContent = '🟢 史坦威平台鋼琴取樣已載入 (真實錄音)';
+              b.classList.add('ready');
+            }
+          })
+          .catch(function(e) {
+            console.log('Soundfont CDN fallback to physical modeling synth');
+            const b = document.getElementById('badgeSoundEngine');
+            if (b) {
+              b.textContent = '🎹 擬真物理共振鋼琴引擎 (已就緒)';
+              b.classList.add('ready');
+            }
+          });
+      } else {
+        const b = document.getElementById('badgeSoundEngine');
+        if (b) {
+          b.textContent = '🎹 擬真物理共振鋼琴引擎 (已就緒)';
+          b.classList.add('ready');
+        }
+      }
+    }
+
+    // 擬真物理共振合成 (若取樣庫尚未載入時的強大備援)
+    function playSyntheticPiano(freq, isBass = false, duration = 3.2, gainLevel = 0.5) {
       const now = audioCtx.currentTime;
 
       const osc1 = audioCtx.createOscillator();
@@ -570,25 +645,25 @@
       osc1.frequency.setValueAtTime(freq, now);
 
       osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(freq * 2, now);
+      osc2.frequency.setValueAtTime(freq * 2.002, now); // 微失諧產生琴弦共鳴
 
       osc3.type = 'sine';
-      osc3.frequency.setValueAtTime(freq * 3, now);
+      osc3.frequency.setValueAtTime(freq * 3.001, now);
 
       oscSub.type = 'sine';
       oscSub.frequency.setValueAtTime(freq * 0.5, now);
 
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(isBass ? 900 : 3400, now);
-      filter.frequency.exponentialRampToValueAtTime(isBass ? 250 : 650, now + duration * 0.7);
+      filter.frequency.setValueAtTime(isBass ? 850 : 3600, now);
+      filter.frequency.exponentialRampToValueAtTime(isBass ? 200 : 600, now + duration * 0.75);
 
       const hammer = audioCtx.createOscillator();
       const hammerGain = audioCtx.createGain();
       hammer.type = 'sine';
-      hammer.frequency.setValueAtTime(freq * 4.5, now);
-      hammerGain.gain.setValueAtTime(0.06, now);
-      hammerGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+      hammer.frequency.setValueAtTime(freq * 5.2, now);
+      hammerGain.gain.setValueAtTime(0.08, now);
+      hammerGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
       hammer.connect(hammerGain);
       hammerGain.connect(filter);
       hammer.start(now);
@@ -596,8 +671,8 @@
 
       const mainGain = audioCtx.createGain();
       mainGain.gain.setValueAtTime(0.0001, now);
-      mainGain.gain.exponentialRampToValueAtTime(gainLevel, now + 0.008);
-      mainGain.gain.exponentialRampToValueAtTime(gainLevel * 0.5, now + 0.2);
+      mainGain.gain.exponentialRampToValueAtTime(gainLevel, now + 0.007);
+      mainGain.gain.exponentialRampToValueAtTime(gainLevel * 0.55, now + 0.22);
       mainGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
       osc1.connect(filter);
@@ -619,6 +694,23 @@
       if (isBass) oscSub.stop(now + duration + 0.1);
     }
 
+    // 統一發聲入口：優先真實取樣，兼顧物理踏板延音
+    function playPianoTone(noteName, freq, isBass = false, duration = 3.0, velocity = 0.55) {
+      initAudio();
+      if (realPiano) {
+        try {
+          // SoundFont 支援 standard note string 如 Db4, Eb5, C3
+          realPiano.play(noteName, audioCtx.currentTime, {
+            gain: velocity,
+            duration: duration
+          });
+          return;
+        } catch(e) {}
+      }
+      // 備援物理引擎
+      playSyntheticPiano(freq, isBass, duration, velocity);
+    }
+
     const bassFreqMap = {
       'C2': 65.41, 'Db2': 69.30, 'D2': 73.42, 'Eb2': 77.78, 'E2': 82.41, 'F2': 87.31,
       'Gb2': 92.50, 'G2': 97.99, 'Ab2': 103.83, 'A2': 110.00, 'Bb2': 116.54, 'B2': 123.47,
@@ -626,6 +718,9 @@
       'Gb3': 185.00, 'G3': 196.00, 'Ab3': 207.65, 'A3': 220.00, 'Bb3': 233.08, 'B3': 246.94
     };
 
+    // -------------------------------------------------------------
+    // 2. 鍵盤定義 (MacBook 琴鍵)
+    // -------------------------------------------------------------
     const keysDef = [
       { note: 'C4', key: 'A', isBlack: false, freq: 261.63, label: 'C4' },
       { note: 'Db4', key: 'W', isBlack: true, freq: 277.18, label: 'D♭4' },
@@ -690,7 +785,7 @@
     });
 
     // -------------------------------------------------------------
-    // 3. 樂譜數據集
+    // 3. 樂譜數據集 (MuseScore 4 原譜 138 音符)
     // -------------------------------------------------------------
     const scoreDb = [{"m": "前奏", "chord": "Dbadd9", "beat": 1, "note": "Db4", "key": "W", "lh": "Db3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "lyric": "【前奏 琴音分解】"}, {"sec": "主歌 (小節 1)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 2)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "而我卻"}, {"sec": "主歌 (小節 3)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "停留"}, {"sec": "主歌 (小節 4)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "多少等候"}, {"sec": "主歌 (小節 5)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "落空"}, {"sec": "主歌 (小節 6)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 7)", "chord": "Ebm11", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Ebm11", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Ebm11", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Eb3", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 10)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 12)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "漩渦"}, {"sec": "主歌 (小節 14)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 15)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 16)", "chord": "Ebm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Ebm7", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Ebm7", "beat": 3, "note": "Bb4", "key": "U", "lh": "Eb3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "F", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "F/A", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "F/A", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "F/A", "beat": 3, "note": "C5", "key": "K", "lh": "Ab2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Ebm11", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Ebm11", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Ebm11", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Eb3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "Eb11", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "Eb11", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "Eb11", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Eb3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Ebm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Ebm7", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Ebm7", "beat": 3, "note": "Bb4", "key": "U", "lh": "Eb3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 2 (小節 36)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 37)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 38)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 40)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Ebm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Ebm7", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Ebm7", "beat": 3, "note": "Bb4", "key": "U", "lh": "Eb3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 43)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Dbadd9", "beat": 3, "note": "Db5", "key": "O", "lh": "Db3", "phrase": "完結"}];
     const scoreC = [{"m": "前奏", "chord": "Cadd9", "beat": 1, "note": "C4", "key": "A", "lh": "C3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "lyric": "【前奏 琴音分解】"}, {"sec": "主歌 (小節 1)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 2)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "而我卻"}, {"sec": "主歌 (小節 3)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "停留"}, {"sec": "主歌 (小節 4)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "多少等候"}, {"sec": "主歌 (小節 5)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "落空"}, {"sec": "主歌 (小節 6)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 7)", "chord": "Dm11", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Dm11", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Dm11", "beat": 3, "note": "G4", "key": "G", "lh": "D3", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 10)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 12)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "漩渦"}, {"sec": "主歌 (小節 14)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 15)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 16)", "chord": "Dm7", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Dm7", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Dm7", "beat": 3, "note": "A4", "key": "H", "lh": "D3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "E", "beat": 1, "note": "B3", "key": "J", "lh": "E2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "E/G#", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "E/G#", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "E/G#", "beat": 3, "note": "B4", "key": "J", "lh": "G2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Dm11", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Dm11", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Dm11", "beat": 3, "note": "G4", "key": "G", "lh": "D3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "D11", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "D11", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "D11", "beat": 3, "note": "G4", "key": "G", "lh": "D3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "那空洞"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Dm7", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Dm7", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Dm7", "beat": 3, "note": "A4", "key": "H", "lh": "D3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 2 (小節 36)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 37)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 38)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 40)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "卸下重擔"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Dm7", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Dm7", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Dm7", "beat": 3, "note": "A4", "key": "H", "lh": "D3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 43)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Cadd9", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "完結"}];
@@ -896,7 +991,8 @@
     let currentKey = 'db';    // 'db' | 'c'
     let noteIdx = 0;
     let combo = 0;
-    let autoTimer = null;
+    let autoRunning = false;
+    let autoTimeout = null;
 
     function getActiveDataset() {
       if (currentMode === 'score') {
@@ -938,17 +1034,23 @@
       document.getElementById('lblSectionProgress').textContent = `段落：${item.sec || ''} (${noteIdx + 1}/${ds.length})`;
 
       if (currentMode === 'score') {
-        document.getElementById('lblMeasure').textContent = `${item.sec} · 3/4 拍`;
+        document.getElementById('lblMeasure').textContent = `${item.sec} · 3/4 拍慢板`;
         document.getElementById('lblPhraseLine').textContent = `歌詞對照：「${item.phrase}」`;
         document.getElementById('lblChordTitle').textContent = item.chord;
         document.getElementById('lblNoteInfo').textContent = `第 ${item.beat} 拍音符：${item.note}`;
 
         if (item.beat === 1) {
           document.getElementById('lblLhBass').style.display = 'inline-flex';
-          document.getElementById('lblLhBass').textContent = `左手低音連動：${item.lh} 咚～～`;
+          document.getElementById('lblLhBass').textContent = `左手低音連動：${item.lh} 咚～～ (踏板共鳴 4 秒)`;
+          document.getElementById('lblBreatheHint').textContent = '🌿 踩下延音踏板：低音持續共振';
+        } else if (item.beat === 2) {
+          document.getElementById('lblLhBass').style.display = 'inline-flex';
+          document.getElementById('lblLhBass').textContent = `右手分解琶音 (中音流動)`;
+          document.getElementById('lblBreatheHint').textContent = '🌊 和弦中音流動';
         } else {
           document.getElementById('lblLhBass').style.display = 'inline-flex';
-          document.getElementById('lblLhBass').textContent = `右手分解琶音`;
+          document.getElementById('lblLhBass').textContent = `右手高音點綴 (拍末空拍留白)`;
+          document.getElementById('lblBreatheHint').textContent = '✨ 拍末留白：準備下一小節深呼吸';
         }
 
         if (noteIdx < ds.length - 1) {
@@ -963,6 +1065,7 @@
         document.getElementById('lblChordTitle').textContent = item.word;
         document.getElementById('lblNoteInfo').textContent = item.note;
         document.getElementById('lblLhBass').style.display = 'none';
+        document.getElementById('lblBreatheHint').textContent = '🎤 歌手逐字唱腔旋律';
 
         if (noteIdx < ds.length - 1) {
           const next = ds[noteIdx + 1];
@@ -1008,12 +1111,17 @@
       }
 
       if (currentMode === 'score') {
-        if (target.beat === 1 && target.lh && bassFreqMap[target.lh]) {
-          playAcousticPianoNote(bassFreqMap[target.lh], true, 3.4, 0.48);
+        // 第一拍：左手低音伴隨踏板深沉共鳴 4.2 秒
+        if (target.beat === 1 && target.lh) {
+          const bassFreq = bassFreqMap[target.lh] || 130.81;
+          playPianoTone(target.lh, bassFreq, true, 4.2, 0.78);
         }
-        playAcousticPianoNote(k.freq, false, 2.4, 0.42);
+        // 右手音符 (根據拍子給予細膩力度)
+        const vel = target.beat === 1 ? 0.68 : (target.beat === 2 ? 0.48 : 0.58);
+        const dur = target.beat === 3 ? 1.6 : 2.5;
+        playPianoTone(target.note, k.freq, false, dur, vel);
       } else {
-        playAcousticPianoNote(k.freq, false, 2.2, 0.45);
+        playPianoTone(target.note ? target.note.split(' ')[0] : 'C4', k.freq, false, 2.0, 0.65);
       }
 
       if (char === target.key) {
@@ -1030,7 +1138,6 @@
       currentMode = 'score';
       this.classList.add('active');
       document.getElementById('btnModeMelody').classList.remove('active');
-      document.getElementById('noticeText').innerHTML = '目前模式：<b>MuseScore 4 琴譜伴奏模式</b>。你敲出的每個音，就是 MuseScore 4 裡面寫的鋼琴音（包含左手低音與右手分解琶音）！';
       setupSectionNav();
       noteIdx = 0;
       updateUI();
@@ -1040,7 +1147,6 @@
       currentMode = 'melody';
       this.classList.add('active');
       document.getElementById('btnModeScore').classList.remove('active');
-      document.getElementById('noticeText').innerHTML = '目前模式：<b>歌手人聲旋律模式</b>。敲擊鍵盤練習呂允唱歌時逐字的唱腔音高！';
       setupSectionNav();
       noteIdx = 0;
       updateUI();
@@ -1062,23 +1168,56 @@
       updateUI();
     });
 
+    // -------------------------------------------------------------
+    // 4. 人性化慢板 3/4 拍自動演奏 (具備留白、空拍休止符與呼吸感)
+    // -------------------------------------------------------------
     const btnAuto = document.getElementById('btnAutoPlay');
+
+    function scheduleNextAutoNote() {
+      if (!autoRunning) return;
+      const ds = getActiveDataset();
+      const cur = ds[noteIdx];
+      pressKey(cur.key);
+
+      // 計算真實慢板 3/4 拍的節奏時值：
+      // Beat 1: 850ms (重音低音展開)
+      // Beat 2: 720ms (中音流動)
+      // Beat 3: 650ms (高音點綴)
+      // 小節結束交界：額外增加 380ms「空拍留白休止符」，形成自然的深呼吸感！
+      let delay = 750;
+      if (currentMode === 'score') {
+        if (cur.beat === 1) delay = 860;
+        else if (cur.beat === 2) delay = 730;
+        else if (cur.beat === 3) {
+          delay = 620 + 360; // 包含小節結尾的「空拍休止留白」！
+          const stage = document.getElementById('stageBlock');
+          setTimeout(() => {
+            if (autoRunning) stage.classList.add('rest-breathe');
+          }, 500);
+          setTimeout(() => {
+            stage.classList.remove('rest-breathe');
+          }, 950);
+        }
+      } else {
+        delay = 580;
+      }
+
+      autoTimeout = setTimeout(scheduleNextAutoNote, delay);
+    }
+
     btnAuto.addEventListener('click', function() {
-      if (autoTimer) {
-        clearInterval(autoTimer);
-        autoTimer = null;
-        this.textContent = '▶️ 自動演奏試聽';
+      if (autoRunning) {
+        autoRunning = false;
+        clearTimeout(autoTimeout);
+        this.textContent = '▶️ 自動演奏試聽 (真實慢板節奏)';
         this.classList.remove('active');
         return;
       }
+      initAudio();
+      autoRunning = true;
       this.textContent = '⏹️ 停止試聽';
       this.classList.add('active');
-
-      autoTimer = setInterval(() => {
-        const ds = getActiveDataset();
-        const cur = ds[noteIdx];
-        pressKey(cur.key);
-      }, 520);
+      scheduleNextAutoNote();
     });
 
     document.getElementById('btnPrev').addEventListener('click', () => {
@@ -1098,6 +1237,9 @@
       updateUI();
     });
 
+    // 初始化音訊與段落
+    window.addEventListener('click', initAudio, { once: true });
+    window.addEventListener('keydown', initAudio, { once: true });
     setupSectionNav();
     updateUI();
   </script>
