@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>空拍 (Pause ll) - 呂允官方和弦 MacBook 彈唱練習器</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card-bg: #1a1d24;
+      --card-inner: #242832;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --green: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --key-white: #ffffff;
+      --key-black: #1e293b;
+      --active-key: #0ea5e9;
+      --guided-white: #fef08a;
+      --guided-black: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .badge-official {
+      background: linear-gradient(135deg, #ef4444, #f97316);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    /* 頂部舞台卡片 */
+    .stage-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      background: #272c38;
+      color: #f1f5f9;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button:hover {
+      background: #333a4a;
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    /* 核心舞台 */
+    .song-display {
+      text-align: center;
+      padding: 16px;
+      background: var(--card-inner);
+      border-radius: 12px;
+    }
+
+    .chord-highlight {
+      font-size: 52px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+      margin-bottom: 4px;
+    }
+
+    .lyric-highlight {
+      font-size: 24px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .keys-prompt {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .keys-prompt span {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      margin: 0 3px;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      font-family: ui-monospace, monospace;
+    }
+
+    /* 3/4 拍圓舞曲律動指示燈 */
+    .beats-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .beat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .beat-circle {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transition: all 0.08s;
+    }
+
+    .beat-circle.active {
+      background: var(--primary);
+      transform: scale(1.4);
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    .beat-item span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* 鋼琴鍵盤容器 */
+    .piano-box {
+      background: #14171f;
+      border-radius: 16px;
+      padding: 14px 16px 18px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+      border: 2px solid #282e3d;
+      position: relative;
+    }
+
+    .piano-board {
+      position: relative;
+      width: 100%;
+      height: 230px;
+      display: flex;
+    }
+
+    .white-keys {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .white-key {
+      flex: 1;
+      height: 100%;
+      background: var(--key-white);
+      border: 1px solid #cbd5e1;
+      border-radius: 0 0 6px 6px;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.05s, transform 0.05s;
+    }
+
+    .white-key.active {
+      background: var(--active-key) !important;
+      transform: translateY(2px);
+    }
+
+    .white-key.guided {
+      background: var(--guided-white) !important;
+      border-color: #f59e0b;
+      box-shadow: inset 0 -10px 0 var(--guided-black);
+    }
+
+    .black-keys {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 140px;
+      display: flex;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .black-slot {
+      flex: 1;
+      position: relative;
+    }
+
+    .black-key {
+      position: absolute;
+      width: 62%;
+      height: 100%;
+      background: var(--key-black);
+      right: -31%;
+      border-radius: 0 0 5px 5px;
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 6px;
+      box-shadow: 2px 4px 6px rgba(0,0,0,0.6);
+      transition: background 0.05s, transform 0.05s;
+    }
+
+    .black-key.active {
+      background: var(--active-key) !important;
+      transform: translateY(2px);
+    }
+
+    .black-key.guided {
+      background: var(--guided-black) !important;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.8);
+    }
+
+    .kb-badge {
+      font-size: 13px;
+      font-weight: 800;
+      padding: 3px 6px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.08);
+      color: #0f172a;
+      font-family: ui-monospace, Menlo, monospace;
+    }
+
+    .black-key .kb-badge {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    .note-sub {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .black-key .note-sub {
+      color: #cbd5e1;
+    }
+
+    /* 完整和弦譜對照表 (呂允 IG 原文版面) */
+    .sheet-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sheet-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .interactive-sheet {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      line-height: 1.6;
+    }
+
+    .sheet-line {
+      background: rgba(0,0,0,0.2);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .sheet-line.current {
+      background: rgba(56, 189, 248, 0.08);
+      border-left-color: var(--primary);
+    }
+
+    .chord-tokens {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 2px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .chord-token {
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 0.1s;
+    }
+
+    .chord-token:hover {
+      background: rgba(245, 158, 11, 0.25);
+    }
+
+    .chord-token.selected {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .lyric-text {
+      font-size: 15px;
+      color: #e2e8f0;
+    }
+
+    /* 伴奏工具列 */
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: var(--card-bg);
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>
+      <span>呂允《空拍 (Pause ll)》MacBook 彈唱教練</span>
+      <span class="badge-official">原作者官方和弦核准版</span>
+    </h1>
+    <p>完全依據原唱 呂允 2019/1/11 官方 IG 公布的吉他/鋼琴和弦進行！直接敲 MacBook 鍵盤即可發聲</p>
+  </header>
+
+  <div class="main-layout">
+    <!-- 舞台顯示區 -->
+    <div class="stage-card">
+      <div class="stage-header">
+        <div class="btn-group">
+          <button id="btnPrev">◀ 上一個和弦</button>
+          <button id="btnNext">下一個和弦 ▶</button>
+          <button id="btnAutoPlay">⏱ 自動 3/4 拍節拍引導</button>
+        </div>
+
+        <div class="btn-group">
+          <span style="font-size: 12px; color: var(--text-muted);">調性：</span>
+          <button id="btnKeyC" class="active">Capo 1 (C 調記法，最推薦)</button>
+          <button id="btnKeyDb">原調 bD (D♭ 調)</button>
+        </div>
+      </div>
+
+      <div class="song-display">
+        <div class="chord-highlight" id="lblChord">Cadd9</div>
+        <div class="lyric-highlight" id="lblLyric">「不要說 他已遠走」</div>
+        <div class="keys-prompt" id="lblPrompt">
+          MacBook 鍵盤請敲：<span id="promptKeys">A + D + G + L</span>
+        </div>
+
+        <div class="beats-row">
+          <div class="beat-item">
+            <div class="beat-circle active" id="dot1"></div>
+            <span>第 1 拍 (根音重拍)</span>
+          </div>
+          <div class="beat-item">
+            <div class="beat-circle" id="dot2"></div>
+            <span>第 2 拍 (輕音)</span>
+          </div>
+          <div class="beat-item">
+            <div class="beat-circle" id="dot3"></div>
+            <span>第 3 拍 (空拍/留白)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 鋼琴鍵盤本體 -->
+    <div class="piano-box">
+      <div class="piano-board">
+        <div class="white-keys" id="whiteKeys"></div>
+        <div class="black-keys" id="blackKeys"></div>
+      </div>
+    </div>
+
+    <!-- 官方完整和弦譜 (點擊可直接跳轉) -->
+    <div class="sheet-card">
+      <div class="sheet-title">
+        <span>📜 呂允官方《空拍》完整彈唱譜（點選任一和弦即可跳至該處彈奏）</span>
+        <span style="font-size: 12px; color: var(--accent);">點和弦即時高亮琴鍵</span>
+      </div>
+
+      <div class="interactive-sheet" id="sheetContainer"></div>
+    </div>
+
+    <!-- 伴奏音訊控制 -->
+    <div class="bottom-bar">
+      <div class="btn-group">
+        <button id="btnPlayAcc">▶ 播放同資料夾伴奏.m4a</button>
+        <button id="btnPlayClick">⏱ 節拍軌</button>
+      </div>
+
+      <div style="font-size: 13px; color: var(--text-muted);">
+        提示：這首歌的精華就在 <strong>Cadd9</strong> 的空靈感與 <strong>E ➔ E/G#</strong> 的深情推進！
+      </div>
+
+      <audio id="audioAcc" preload="none"></audio>
+      <audio id="audioClick" preload="none"></audio>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------------------------------------------
+    // 1. 純淨平台鋼琴合成器 (Web Audio API)
+    // -----------------------------------------------------------------
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playPiano(freq) {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc1.type = 'triangle';
+      osc2.type = 'sine';
+      osc1.frequency.setValueAtTime(freq, now);
+      osc2.frequency.setValueAtTime(freq * 2, now);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.35, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.12, now + 0.2);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 2.6);
+      osc2.stop(now + 2.6);
+    }
+
+    // -----------------------------------------------------------------
+    // 2. 鋼琴鍵位對應 (MacBook Air 中間排 & 上方排)
+    // -----------------------------------------------------------------
+    const keysDef = [
+      { note: 'C4', key: 'A', isBlack: false, freq: 261.63 },
+      { note: 'C#4', key: 'W', isBlack: true, freq: 277.18 },
+      { note: 'D4', key: 'S', isBlack: false, freq: 293.66 },
+      { note: 'D#4', key: 'E', isBlack: true, freq: 311.13 },
+      { note: 'E4', key: 'D', isBlack: false, freq: 329.63 },
+      { note: 'F4', key: 'F', isBlack: false, freq: 349.23 },
+      { note: 'F#4', key: 'T', isBlack: true, freq: 369.99 },
+      { note: 'G4', key: 'G', isBlack: false, freq: 392.00 },
+      { note: 'G#4', key: 'Y', isBlack: true, freq: 415.30 },
+      { note: 'A4', key: 'H', isBlack: false, freq: 440.00 },
+      { note: 'A#4', key: 'U', isBlack: true, freq: 466.16 },
+      { note: 'B4', key: 'J', isBlack: false, freq: 493.88 },
+      { note: 'C5', key: 'K', isBlack: false, freq: 523.25 },
+      { note: 'C#5', key: 'O', isBlack: true, freq: 554.37 },
+      { note: 'D5', key: 'L', isBlack: false, freq: 587.33 },
+      { note: 'D#5', key: 'P', isBlack: true, freq: 622.25 },
+      { note: 'E5', key: ';', isBlack: false, freq: 659.25 },
+      { note: 'F5', key: "'", isBlack: false, freq: 698.46 },
+    ];
+
+    const keyMap = {};
+    keysDef.forEach(k => keyMap[k.key.toUpperCase()] = k);
+
+    const whiteContainer = document.getElementById('whiteKeys');
+    const blackContainer = document.getElementById('blackKeys');
+
+    keysDef.forEach(k => {
+      if (!k.isBlack) {
+        const el = document.createElement('div');
+        el.className = 'white-key';
+        el.id = `key-${k.key}`;
+        el.innerHTML = `
+          <div class="kb-badge">${k.key}</div>
+          <div class="note-sub">${k.note}</div>
+        `;
+        el.addEventListener('mousedown', () => pressKey(k.key));
+        whiteContainer.appendChild(el);
+
+        const slot = document.createElement('div');
+        slot.className = 'black-slot';
+        slot.id = `slot-${k.key}`;
+        blackContainer.appendChild(slot);
+      } else {
+        const prev = keysDef[keysDef.indexOf(k) - 1];
+        const slot = document.getElementById(`slot-${prev.key}`);
+        if (slot) {
+          const el = document.createElement('div');
+          el.className = 'black-key';
+          el.id = `key-${k.key}`;
+          el.innerHTML = `
+            <div class="kb-badge">${k.key}</div>
+            <div class="note-sub">${k.note}</div>
+          `;
+          el.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            pressKey(k.key);
+          });
+          slot.appendChild(el);
+        }
+      }
+    });
+
+    function pressKey(char) {
+      char = char.toUpperCase();
+      const k = keyMap[char];
+      if (k) {
+        playPiano(k.freq);
+        const el = document.getElementById(`key-${k.key}`);
+        if (el) {
+          el.classList.add('active');
+          setTimeout(() => el.classList.remove('active'), 180);
+        }
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.repeat) return;
+      const char = e.key.toUpperCase();
+      if (keyMap[char]) pressKey(char);
+    });
+
+    // -----------------------------------------------------------------
+    // 3. 呂允 2019/1/11 官方 IG 發布的和弦對照資料
+    // -----------------------------------------------------------------
+    // C 調 (Capo 1)
+    const officialStepsC = [
+      { chord: 'Cadd9', lyric: '不要說 他已遠走', keys: ['A', 'D', 'G', 'L'] },
+      { chord: 'G/B', lyric: '而我卻', keys: ['J', 'S', 'G'] },
+      { chord: 'Am7', lyric: '停留', keys: ['H', 'A', 'D', 'G'] },
+
+      { chord: 'Am/G', lyric: '多少等候', keys: ['G', 'A', 'D', 'H'] },
+      { chord: 'Fsus2', lyric: '落空', keys: ['F', 'G', 'K'] },
+      { chord: 'C/E', lyric: '多少寂寞', keys: ['D', 'G', 'K'] },
+      { chord: 'Dm11', lyric: '滲透', keys: ['S', 'F', 'G', 'K'] },
+      { chord: 'Gsus4', lyric: '...', keys: ['G', 'K', 'L'] },
+      { chord: 'G', lyric: '...', keys: ['G', 'J', 'S'] },
+
+      { chord: 'Cadd9', lyric: '我想走 但始終埋沒', keys: ['A', 'D', 'G', 'L'] },
+      { chord: 'G/B', lyric: '...', keys: ['J', 'S', 'G'] },
+      { chord: 'Am7', lyric: '漩渦', keys: ['H', 'A', 'D', 'G'] },
+      { chord: 'Am/G', lyric: '...', keys: ['G', 'A', 'D', 'H'] },
+
+      { chord: 'Fsus2', lyric: '疲憊抹去自我', keys: ['F', 'G', 'K'] },
+      { chord: 'C/E', lyric: '無奈擊潰從容', keys: ['D', 'G', 'K'] },
+      { chord: 'Dm7', lyric: '真正失去的比想像更多', keys: ['S', 'F', 'H', 'K'] },
+      { chord: 'Gsus4', lyric: '...', keys: ['G', 'K', 'L'] },
+      { chord: 'G', lyric: '...', keys: ['G', 'J', 'S'] },
+
+      // Pre-Chorus (核心神轉位 E -> E/G#)
+      { chord: 'E', lyric: '黑夜失眠簇擁內心喧囂', keys: ['D', 'Y', 'J'] },
+      { chord: 'E/G#', lyric: '煩悶的生活', keys: ['Y', 'D', 'J'] },
+      { chord: 'Am7', lyric: '一天天晃過', keys: ['H', 'A', 'D', 'G'] },
+      { chord: 'Am/G', lyric: '...', keys: ['G', 'A', 'D', 'H'] },
+      { chord: 'Dm11(7)', lyric: '難以越過', keys: ['S', 'F', 'G', 'K'] },
+      { chord: 'D11(7)', lyric: '那空洞', keys: ['S', 'T', 'G', 'K'] },
+      { chord: 'Gsus4', lyric: '...', keys: ['G', 'K', 'L'] },
+      { chord: 'G', lyric: '...', keys: ['G', 'J', 'S'] },
+
+      // Chorus 1
+      { chord: 'Cadd9', lyric: '我一片空白', keys: ['A', 'D', 'G', 'L'] },
+      { chord: 'G/B', lyric: '停滯在灰色地帶', keys: ['J', 'S', 'G'] },
+      { chord: 'Am7', lyric: '說不出內心感慨', keys: ['H', 'A', 'D', 'G'] },
+      { chord: 'Am/G', lyric: '...', keys: ['G', 'A', 'D', 'H'] },
+      { chord: 'Fsus2', lyric: '步履蹣跚', keys: ['F', 'G', 'K'] },
+      { chord: 'C/E', lyric: '...', keys: ['D', 'G', 'K'] },
+      { chord: 'Dm7', lyric: '快點回來 就不哀嘆', keys: ['S', 'F', 'H', 'K'] },
+      { chord: 'Gsus4', lyric: '...', keys: ['G', 'K', 'L'] },
+      { chord: 'G', lyric: '...', keys: ['G', 'J', 'S'] },
+
+      // Chorus 2
+      { chord: 'Cadd9', lyric: '又一段空拍', keys: ['A', 'D', 'G', 'L'] },
+      { chord: 'G/B', lyric: '停止在絕望塵埃', keys: ['J', 'S', 'G'] },
+      { chord: 'Am7', lyric: '吹散陰霾', keys: ['H', 'A', 'D', 'G'] },
+      { chord: 'Am/G', lyric: '...', keys: ['G', 'A', 'D', 'H'] },
+      { chord: 'Fsus2', lyric: '卸下重擔', keys: ['F', 'G', 'K'] },
+      { chord: 'C/E', lyric: '...', keys: ['D', 'G', 'K'] },
+      { chord: 'Dm7', lyric: '就算重來', keys: ['S', 'F', 'H', 'K'] },
+      { chord: 'G', lyric: '並非失敗', keys: ['G', 'J', 'S'] },
+      { chord: 'Cadd9', lyric: '(留白結束)', keys: ['A', 'D', 'G', 'L'] },
+    ];
+
+    // 原調 bD (D♭ 調)
+    const officialStepsDb = officialStepsC.map(item => {
+      // 升半音對照
+      const chordMap = {
+        'Cadd9': 'D♭add9', 'G/B': 'A♭/C', 'Am7': 'B♭m7', 'Am/G': 'B♭m/A♭',
+        'Fsus2': 'G♭sus2', 'C/E': 'D♭/F', 'Dm11': 'E♭m11', 'Gsus4': 'A♭sus4',
+        'G': 'A♭', 'E': 'F', 'E/G#': 'F/A', 'Dm11(7)': 'E♭m11', 'D11(7)': 'E♭11',
+        'Dm7': 'E♭m7'
+      };
+      // 按鍵升半音映射
+      const keyShift = {
+        'A': 'W', 'W': 'S', 'S': 'E', 'E': 'D', 'D': 'F', 'F': 'T',
+        'T': 'G', 'G': 'Y', 'Y': 'H', 'H': 'U', 'U': 'J', 'J': 'K',
+        'K': 'O', 'O': 'L', 'L': 'P', 'P': ';', ';': "'", "'": "'"
+      };
+      return {
+        chord: chordMap[item.chord] || item.chord,
+        lyric: item.lyric,
+        keys: item.keys.map(k => keyShift[k] || k)
+      };
+    });
+
+    let activeSteps = officialStepsC;
+    let stepIdx = 0;
+
+    function renderStep() {
+      document.querySelectorAll('.key').forEach(k => k.classList.remove('guided'));
+      document.querySelectorAll('.chord-token').forEach(t => t.classList.remove('selected'));
+
+      const cur = activeSteps[stepIdx];
+      document.getElementById('lblChord').textContent = cur.chord;
+      document.getElementById('lblLyric').textContent = `「${cur.lyric}」`;
+      document.getElementById('promptKeys').textContent = cur.keys.join(' + ');
+
+      // 高亮鍵盤
+      cur.keys.forEach(k => {
+        const el = document.getElementById(`key-${k}`);
+        if (el) el.classList.add('guided');
+      });
+
+      // 同步下方和弦高亮
+      const tokenEl = document.getElementById(`token-${stepIdx}`);
+      if (tokenEl) {
+        tokenEl.classList.add('selected');
+        tokenEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    document.getElementById('btnNext').addEventListener('click', () => {
+      stepIdx = (stepIdx + 1) % activeSteps.length;
+      renderStep();
+    });
+
+    document.getElementById('btnPrev').addEventListener('click', () => {
+      stepIdx = (stepIdx - 1 + activeSteps.length) % activeSteps.length;
+      renderStep();
+    });
+
+    document.getElementById('btnKeyC').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('btnKeyDb').classList.remove('active');
+      activeSteps = officialStepsC;
+      renderStep();
+      buildSheetHTML();
+    });
+
+    document.getElementById('btnKeyDb').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('btnKeyC').classList.remove('active');
+      activeSteps = officialStepsDb;
+      renderStep();
+      buildSheetHTML();
+    });
+
+    // 渲染互動歌詞和弦譜
+    function buildSheetHTML() {
+      const container = document.getElementById('sheetContainer');
+      container.innerHTML = '';
+
+      const lines = [
+        { indices: [0, 1, 2], lyric: '不要說 他已遠走 而我卻停留' },
+        { indices: [3, 4, 5, 6, 7, 8], lyric: '多少等候 落空 多少寂寞 滲透' },
+        { indices: [9, 10, 11, 12], lyric: '我想走 但始終埋沒 漩渦' },
+        { indices: [13, 14], lyric: '疲憊抹去自我 無奈擊潰從容' },
+        { indices: [15, 16, 17], lyric: '真正失去的比想像更多' },
+        { indices: [18, 19, 20, 21], lyric: '黑夜失眠簇擁內心喧囂煩悶的生活' },
+        { indices: [22, 23, 24, 25], lyric: '一天天晃過 難以越過 那空洞' },
+        { indices: [26, 27, 28, 29], lyric: '我一片空白 停滯在灰色地帶' },
+        { indices: [30, 31], lyric: '說不出內心感慨 步履蹣跚' },
+        { indices: [32, 33, 34], lyric: '快點回來 就不哀嘆' },
+        { indices: [35, 36, 37, 38], lyric: '又一段空拍 停止在絕望塵埃' },
+        { indices: [39, 40], lyric: '吹散陰霾 卸下重擔' },
+        { indices: [41, 42, 43], lyric: '就算重來 並非 失敗' },
+      ];
+
+      lines.forEach(line => {
+        const div = document.createElement('div');
+        div.className = 'sheet-line';
+
+        const chordsDiv = document.createElement('div');
+        chordsDiv.className = 'chord-tokens';
+
+        line.indices.forEach(idx => {
+          if (activeSteps[idx]) {
+            const span = document.createElement('span');
+            span.className = 'chord-token';
+            span.id = `token-${idx}`;
+            span.textContent = activeSteps[idx].chord;
+            span.addEventListener('click', () => {
+              stepIdx = idx;
+              renderStep();
+            });
+            chordsDiv.appendChild(span);
+          }
+        });
+
+        const lyricDiv = document.createElement('div');
+        lyricDiv.className = 'lyric-text';
+        lyricDiv.textContent = line.lyric;
+
+        div.appendChild(chordsDiv);
+        div.appendChild(lyricDiv);
+        container.appendChild(div);
+      });
+    }
+
+    // -----------------------------------------------------------------
+    // 4. 3/4 拍自動引導 (66 BPM)
+    // -----------------------------------------------------------------
+    let autoTimer = null;
+    let beat = 0;
+    const btnAuto = document.getElementById('btnAutoPlay');
+
+    btnAuto.addEventListener('click', () => {
+      initAudio();
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        btnAuto.textContent = '⏱ 自動 3/4 拍節拍引導';
+        btnAuto.classList.remove('active');
+      } else {
+        btnAuto.textContent = '⏹ 停止引導';
+        btnAuto.classList.add('active');
+        const interval = (60 / 66) * 1000;
+
+        autoTimer = setInterval(() => {
+          beat = (beat % 3) + 1;
+          document.getElementById('dot1').classList.toggle('active', beat === 1);
+          document.getElementById('dot2').classList.toggle('active', beat === 2);
+          document.getElementById('dot3').classList.toggle('active', beat === 3);
+
+          // 輕重拍提示音
+          playBeep(beat === 1 ? 880 : 440);
+
+          if (beat === 1) {
+            stepIdx = (stepIdx + 1) % activeSteps.length;
+            renderStep();
+          }
+        }, interval);
+      }
+    });
+
+    function playBeep(freq) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.09);
+    }
+
+    // 音訊控制
+    const audioAcc = document.getElementById('audioAcc');
+    const audioClick = document.getElementById('audioClick');
+    const btnAcc = document.getElementById('btnPlayAcc');
+    const btnClk = document.getElementById('btnPlayClick');
+
+    btnAcc.addEventListener('click', () => {
+      if (audioAcc.paused) {
+        audioAcc.play();
+        btnAcc.textContent = '⏸ 暫停伴奏音檔';
+        btnAcc.classList.add('active');
+      } else {
+        audioAcc.pause();
+        btnAcc.textContent = '▶ 播放同資料夾伴奏.m4a';
+        btnAcc.classList.remove('active');
+      }
+    });
+
+    btnClk.addEventListener('click', () => {
+      if (audioClick.paused) {
+        audioClick.play();
+        btnClk.textContent = '⏸ 暫停節拍軌';
+        btnClk.classList.add('active');
+      } else {
+        audioClick.pause();
+        btnClk.textContent = '⏱ 節拍軌';
+        btnClk.classList.remove('active');
+      }
+    });
+
+    // 初始化
+    buildSheetHTML();
+    renderStep();
+  </script>
+</body>
+</html>
