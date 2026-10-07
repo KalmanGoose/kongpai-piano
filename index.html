@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>空拍 (Pause ll) - 呂允伴奏鋼琴譜 (五線譜完全同步練習器)</title>
-  <!-- 引入真實錄音取樣平台鋼琴音色庫 -->
+  <title>空拍 (Pause ll) - 呂允 49 鍵雙手五線譜鋼琴教練</title>
+  <!-- 真實史坦威平台鋼琴取樣庫 -->
   <script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
   <style>
     :root {
@@ -16,12 +16,10 @@
       --success: #10b981;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --key-white: #ffffff;
-      --key-black: #1e293b;
-      --active-key: #0284c7;
-      --guided-key: #f59e0b;
-      --demo-key: #38bdf8;
-      --lh-bass: #ec4899;
+      --lh-pink: #f43f5e;
+      --lh-bg: rgba(244, 63, 94, 0.15);
+      --rh-cyan: #0284c7;
+      --rh-bg: rgba(2, 132, 199, 0.15);
     }
 
     * {
@@ -58,8 +56,8 @@
       gap: 10px;
     }
 
-    .badge-pdf-sync {
-      background: linear-gradient(135deg, #10b981, #06b6d4);
+    .badge-full-piano {
+      background: linear-gradient(135deg, #ec4899, #38bdf8);
       color: white;
       font-size: 11px;
       font-weight: 800;
@@ -82,7 +80,7 @@
       max-width: 980px;
     }
 
-    /* PDF 樂譜同步下載專區 */
+    /* PDF 五線譜下載卡片 */
     .pdf-download-card {
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
       border: 1px solid rgba(56, 189, 248, 0.25);
@@ -172,7 +170,7 @@
       border-color: rgba(16, 185, 129, 0.4);
     }
 
-    /* 進度條 */
+    /* 進度條與段落選單 */
     .progress-bar-container {
       background: var(--card-bg);
       padding: 12px 18px;
@@ -194,7 +192,7 @@
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
+      background: linear-gradient(90deg, var(--lh-pink), var(--primary));
       transition: width 0.15s ease;
     }
 
@@ -224,7 +222,7 @@
       font-weight: 800;
     }
 
-    /* 模式與演奏控制列 */
+    /* 控制與學習模式列 */
     .controls-top {
       display: flex;
       justify-content: space-between;
@@ -267,274 +265,364 @@
     }
 
     .pill-btn.active-demo {
-      background: linear-gradient(135deg, #10b981, #0284c7);
+      background: linear-gradient(135deg, #ec4899, #0284c7);
       color: #ffffff;
       font-weight: 800;
-      border-color: #10b981;
-      box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4);
+      border-color: #ec4899;
+      box-shadow: 0 2px 12px rgba(236, 72, 153, 0.4);
     }
 
-    /* 舞台主卡片 */
-    .stage-card {
+    /* 大譜表雙手分工展示卡 (Grand Staff Hands Coordinator) */
+    .grand-staff-card {
       background: var(--card-bg);
       border-radius: 16px;
-      padding: 22px 24px;
+      padding: 20px 24px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       border: 1px solid rgba(255,255,255,0.08);
       position: relative;
     }
 
-    .song-stage {
-      text-align: center;
-      padding: 24px 16px;
-      background: var(--card-inner);
-      border-radius: 14px;
-      position: relative;
-      transition: background 0.15s;
-    }
-
-    .song-stage.success-flash {
-      background: rgba(16, 185, 129, 0.2);
-    }
-
-    .measure-badge {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--primary);
-      background: rgba(56, 189, 248, 0.12);
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 8px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-    }
-
     .phrase-line {
-      font-size: 18px;
+      font-size: 17px;
       color: var(--text-muted);
-      margin-bottom: 10px;
+      text-align: center;
+      margin-bottom: 14px;
       font-weight: 500;
-      min-height: 28px;
     }
 
-    .current-chord-title {
-      font-size: 28px;
+    .phrase-line span.active-phrase {
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .hands-split-view {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .hand-box {
+      padding: 16px 18px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .hand-box.lh {
+      background: var(--lh-bg);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .hand-box.lh.active-strike {
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.6);
+      transform: scale(1.02);
+    }
+
+    .hand-box.rh {
+      background: var(--rh-bg);
+      border: 1px solid rgba(2, 132, 199, 0.35);
+    }
+
+    .hand-box.rh.active-strike {
+      box-shadow: 0 0 25px rgba(2, 132, 199, 0.6);
+      transform: scale(1.02);
+    }
+
+    .hand-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .hand-box.lh .hand-header { color: var(--lh-pink); }
+    .hand-box.rh .hand-header { color: var(--primary); }
+
+    .clef-icon {
+      font-size: 20px;
+    }
+
+    .hand-note-big {
+      font-size: 24px;
       font-weight: 900;
       color: #fff;
-      margin-bottom: 4px;
-      letter-spacing: 0.5px;
     }
 
-    .current-note-info {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-
-    .lh-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(236, 72, 153, 0.15);
-      color: #f472b6;
+    .hand-role-desc {
       font-size: 12px;
-      font-weight: 700;
-      padding: 3px 12px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(236, 72, 153, 0.3);
+      color: var(--text-muted);
     }
 
-    .pedal-rest-hint {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(56, 189, 248, 0.12);
-      color: #7dd3fc;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
-
-    .key-target {
+    /* 中間拍子對位樞紐 */
+    .center-meter-hub {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      margin: 6px 0 12px;
+      text-align: center;
     }
 
-    .key-badge {
-      font-size: 38px;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--guided-key), #ea580c);
+    .beat-circle {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 2px solid var(--accent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       color: #fff;
-      width: 72px;
-      height: 72px;
+      font-weight: 800;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .beat-circle .beat-num {
+      font-size: 18px;
+      color: var(--accent);
+    }
+
+    .beat-circle .beat-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .chord-pill {
+      background: rgba(255,255,255,0.08);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    /* 新手單鍵指引列 */
+    .beginner-key-hint-row {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border: 1px dashed rgba(255,255,255,0.15);
+    }
+
+    .target-key-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .target-key-badge {
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: #fff;
+      width: 52px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 14px;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
-      animation: pulseKey 1.4s infinite alternate;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+      animation: pulseTarget 1.3s infinite alternate;
     }
 
-    @keyframes pulseKey {
-      0% { transform: scale(1); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
-      100% { transform: scale(1.08); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
+    @keyframes pulseTarget {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); box-shadow: 0 0 28px rgba(245, 158, 11, 0.8); }
     }
 
-    .key-hint {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .next-preview {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 8px;
-      background: rgba(255,255,255,0.03);
-      padding: 6px 14px;
-      border-radius: 20px;
-      display: inline-block;
-    }
-
-    /* 鋼琴鍵盤容器 */
-    .keyboard-wrapper {
+    /* 49 鍵完整鋼琴鍵盤容器 (C2 ~ C6) */
+    .full-piano-wrapper {
+      margin-top: 14px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      margin-top: 18px;
+      gap: 6px;
       width: 100%;
     }
 
-    .piano-board {
-      position: relative;
-      display: flex;
-      height: 180px;
-      padding: 8px 12px 14px;
-      background: #11141c;
+    .piano-region-banner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 4px 8px;
+    }
+
+    .region-lh {
+      color: var(--lh-pink);
+      border-bottom: 2px solid var(--lh-pink);
+      padding-bottom: 4px;
+    }
+
+    .region-rh {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 4px;
+    }
+
+    .piano-scroll-outer {
+      width: 100%;
+      background: #0f131a;
       border-radius: 12px;
-      box-shadow: inset 0 3px 12px rgba(0,0,0,0.8), 0 4px 15px rgba(0,0,0,0.5);
+      padding: 10px 12px 14px;
       border: 1px solid rgba(255,255,255,0.08);
-      max-width: 100%;
+      box-shadow: inset 0 4px 16px rgba(0,0,0,0.8), 0 6px 20px rgba(0,0,0,0.5);
       overflow-x: auto;
     }
 
-    .white-keys {
+    .piano-board-49 {
+      position: relative;
       display: flex;
-      gap: 3px;
+      height: 160px;
+      width: 100%;
+      min-width: 890px;
     }
 
-    .white-key {
-      width: 50px;
-      height: 155px;
-      background: var(--key-white);
-      border-radius: 0 0 6px 6px;
+    .white-keys-49 {
       display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      padding-bottom: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      width: 100%;
+      height: 100%;
+    }
+
+    .white-key-49 {
+      flex: 1;
+      height: 100%;
+      background: #fdfdfd;
+      border: 1px solid #cbd5e1;
+      border-top: none;
+      border-radius: 0 0 5px 5px;
+      box-shadow: inset 0 -3px 4px rgba(0,0,0,0.2), 0 3px 5px rgba(0,0,0,0.4);
       cursor: pointer;
-      position: relative;
-      transition: all 0.1s;
-    }
-
-    .white-key:active, .white-key.active {
-      background: var(--active-key) !important;
-      transform: translateY(2px);
-    }
-
-    .white-key.guided {
-      background: #fef08a !important;
-      box-shadow: 0 0 15px rgba(250, 204, 21, 0.8);
-    }
-
-    .white-key.demo-active {
-      background: var(--demo-key) !important;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.9);
-      transform: translateY(2px);
-    }
-
-    .black-keys {
-      position: absolute;
-      top: 8px;
-      left: 12px;
-      display: flex;
-      pointer-events: none;
-    }
-
-    .black-slot {
-      width: 53px;
-      position: relative;
-    }
-
-    .black-key {
-      position: absolute;
-      right: -16px;
-      top: 0;
-      width: 32px;
-      height: 102px;
-      background: #181d28;
-      border-radius: 0 0 4px 4px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       align-items: center;
       padding-bottom: 6px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+      position: relative;
+      transition: all 0.08s ease;
+    }
+
+    .white-key-49:active, .white-key-49.active {
+      background: #e2e8f0;
+      transform: translateY(2px);
+    }
+
+    .white-key-49.lh-guided {
+      background: #ffe4e6 !important;
+      border-color: var(--lh-pink) !important;
+      box-shadow: 0 0 16px var(--lh-pink) !important;
+    }
+
+    .white-key-49.rh-guided {
+      background: #e0f2fe !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 16px var(--primary) !important;
+    }
+
+    .white-key-49.lh-strike {
+      background: var(--lh-pink) !important;
+      color: white !important;
+      box-shadow: 0 0 22px var(--lh-pink) !important;
+      transform: translateY(2px);
+    }
+
+    .white-key-49.rh-strike {
+      background: #0284c7 !important;
+      color: white !important;
+      box-shadow: 0 0 22px #0284c7 !important;
+      transform: translateY(2px);
+    }
+
+    .white-key-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .white-key-49.middle-c .white-key-label {
+      color: #d97706;
+      font-weight: 900;
+    }
+
+    .white-key-49.middle-c::before {
+      content: "•";
+      position: absolute;
+      bottom: 18px;
+      color: #d97706;
+      font-size: 14px;
+    }
+
+    /* 黑鍵層 (絕對定位疊加) */
+    .black-keys-49 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 98px;
+      pointer-events: none;
+    }
+
+    .black-key-49 {
+      position: absolute;
+      width: 2.2%;
+      height: 100%;
+      background: #1e293b;
+      border-radius: 0 0 4px 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 -2px 3px rgba(255,255,255,0.15);
       cursor: pointer;
       pointer-events: auto;
       z-index: 2;
-      transition: all 0.1s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 4px;
+      transition: all 0.08s ease;
     }
 
-    .black-key:active, .black-key.active {
-      background: #0284c7 !important;
-      transform: translateY(2px);
-    }
-
-    .black-key.guided {
-      background: var(--guided-key) !important;
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.9);
-    }
-
-    .black-key.demo-active {
-      background: #0284c7 !important;
-      box-shadow: 0 0 22px rgba(56, 189, 248, 1);
-      transform: translateY(2px);
-    }
-
-    .kb-badge {
-      font-size: 12px;
-      font-weight: 800;
-      border-radius: 4px;
-      padding: 1px 4px;
-    }
-
-    .white-key .kb-badge {
+    .black-key-49:active, .black-key-49.active {
       background: #0f172a;
-      color: #fff;
+      transform: translateY(2px);
     }
 
-    .black-key .kb-badge {
-      background: #f8fafc;
-      color: #0f172a;
+    .black-key-49.lh-guided {
+      background: #be123c !important;
+      box-shadow: 0 0 16px var(--lh-pink) !important;
     }
 
-    .note-sub {
-      font-size: 9px;
+    .black-key-49.rh-guided {
+      background: #0369a1 !important;
+      box-shadow: 0 0 16px var(--primary) !important;
+    }
+
+    .black-key-49.lh-strike {
+      background: var(--lh-pink) !important;
+      box-shadow: 0 0 22px var(--lh-pink) !important;
+      transform: translateY(2px);
+    }
+
+    .black-key-49.rh-strike {
+      background: #0284c7 !important;
+      box-shadow: 0 0 22px #0284c7 !important;
+      transform: translateY(2px);
+    }
+
+    .black-key-label {
+      font-size: 8px;
       font-weight: 700;
-      margin-top: 2px;
+      color: #cbd5e1;
     }
-
-    .white-key .note-sub { color: #475569; }
-    .black-key .note-sub { color: #cbd5e1; }
 
     /* 控制列 */
     .control-actions {
@@ -566,18 +654,18 @@
 <body>
 
   <header>
-    <h1>呂允《空拍 Pause ll》五線譜鋼琴教練 <span class="badge-pdf-sync">五線譜同步</span></h1>
-    <p>完全對照剛加入的 7 頁完整五線譜，支援全曲示範演奏、逐音跟彈與真琴音色</p>
+    <h1>呂允《空拍 Pause ll》五線譜鋼琴教練 <span class="badge-full-piano">49 鍵雙手全視野</span></h1>
+    <p>完整 4 八度真實鋼琴視野，清晰學習「左手低音 (低音譜表)」與「右手琶音 (高音譜表)」</p>
   </header>
 
   <div class="main-layout">
-    <!-- PDF 五線譜下載與線上檢視專區 -->
+    <!-- PDF 五線譜下載卡片 -->
     <div class="pdf-download-card">
       <div class="pdf-info">
         <span style="font-size:22px;">🎼</span>
         <div>
           <div style="font-weight:800; color:#fff;">官方完整伴奏鋼琴五線譜 (原調 D♭ 大調 · 全 7 頁)</div>
-          <div style="font-size:12px; color:#94a3b8;">已同步至專案根目錄，可點擊線上閱覽或下載列印</div>
+          <div style="font-size:12px; color:#94a3b8;">已同步至專案根目錄，可隨時點擊線上閱覽或下載列印</div>
         </div>
       </div>
       <div class="pdf-btns">
@@ -593,7 +681,7 @@
         <span class="sound-badge" id="badgeSoundEngine">⏳ 正在連線史坦威平台鋼琴取樣庫...</span>
       </div>
       <div style="color:var(--text-muted); font-size:12px;">
-        ✨ 100% 比照五線譜演奏 (包含 1,445 個音符、踏板延音與空拍留白)
+        ✨ 桃紅燈：𝄢 左手低音 · 天藍燈：𝄞 右手主音
       </div>
     </div>
 
@@ -609,52 +697,90 @@
       <div class="sections-nav" id="sectionNavContainer"></div>
     </div>
 
-    <!-- 模式與調性切換列 -->
+    <!-- 模式與演奏控制列 -->
     <div class="controls-top">
       <div class="btn-group">
-        <span style="font-size:12px; color:var(--text-muted); font-weight:700;">彈奏模式：</span>
-        <button class="pill-btn active" id="btnModeScore">🎹 五線譜伴奏 (對照 PDF)</button>
-        <button class="pill-btn" id="btnModeMelody">🎤 歌手人聲主旋律</button>
+        <span style="font-size:12px; color:var(--text-muted); font-weight:700;">彈奏學習：</span>
+        <button class="pill-btn active" id="btnModeBoth">🌟 新手單鍵跟彈 (雙手連動)</button>
+        <button class="pill-btn" id="btnModeLH">🖐️ 只練左手低音</button>
+        <button class="pill-btn" id="btnModeRH">🖐️ 只練右手琶音</button>
       </div>
 
       <div class="btn-group">
         <span style="font-size:12px; color:var(--text-muted); font-weight:700;">調性：</span>
-        <button class="pill-btn active" id="btnKeyDb">🌟 原調 D♭ (五線譜 5 降)</button>
-        <button class="pill-btn" id="btnKeyC">🤍 新手 C 調 (白鍵)</button>
+        <button class="pill-btn active" id="btnKeyDb">🌟 原調 D♭</button>
+        <button class="pill-btn" id="btnKeyC">🤍 新手 C 調</button>
       </div>
 
       <div class="btn-group">
-        <button class="pill-btn active-demo" id="btnScoreDemo">▶️ 五線譜全曲演奏示範</button>
+        <button class="pill-btn active-demo" id="btnScoreDemo">▶️ 五線譜雙手演奏示範</button>
       </div>
     </div>
 
-    <!-- 舞台核心 -->
-    <div class="stage-card">
-      <div class="song-stage" id="stageBlock">
-        <div class="measure-badge" id="lblMeasure">第 1 小節 · 五線譜對應</div>
-        <div class="phrase-line" id="lblPhraseLine">歌詞對照：「不要說 他已遠走」</div>
-        <div class="current-chord-title" id="lblChordTitle">Dbadd9</div>
-        <div class="current-note-info" id="lblNoteInfo">音符：Eb4 (按鍵 E)</div>
-        <div class="lh-indicator" id="lblLhBass">左手低音：Db3 (踏板共鳴)</div>
-        <div class="pedal-rest-hint" id="lblBreatheHint">🌿 五線譜踏板踩下：低音持續 4 秒共振</div>
+    <!-- 大譜表雙手分工展示卡 (Grand Staff Hands Visualizer) -->
+    <div class="grand-staff-card">
+      <div class="phrase-line" id="lblPhraseLine">歌詞對照：「<span class="active-phrase">不要說 他已遠走</span>」</div>
 
-        <div class="key-target">
-          <div class="key-badge" id="keyBadge">E</div>
-          <div class="key-hint">MacBook 鍵盤請敲此鍵</div>
+      <div class="hands-split-view">
+        <!-- 左手方塊 -->
+        <div class="hand-box lh" id="boxLH">
+          <div class="hand-header">
+            <span class="clef-icon">𝄢</span>
+            <span>左手 (低音譜表)</span>
+          </div>
+          <div class="hand-note-big" id="lblLhNote">Db3</div>
+          <div class="hand-role-desc" id="lblLhDesc">沉穩低音 · 踏板延留 4 秒</div>
         </div>
 
-        <div class="next-preview" id="lblNextPreview">下一個音：Ab4 (按 Y)</div>
-      </div>
+        <!-- 拍子樞紐 -->
+        <div class="center-meter-hub">
+          <div class="beat-circle">
+            <div class="beat-num" id="lblBeatNum">1</div>
+            <div class="beat-sub">拍 / 3</div>
+          </div>
+          <div class="chord-pill" id="lblChordPill">Dbadd9</div>
+        </div>
 
-      <!-- 鍵盤介面 -->
-      <div class="keyboard-wrapper">
-        <div class="piano-board">
-          <div class="white-keys" id="whiteKeys"></div>
-          <div class="black-keys" id="blackKeys"></div>
+        <!-- 右手方塊 -->
+        <div class="hand-box rh" id="boxRH">
+          <div class="hand-header">
+            <span class="clef-icon">𝄞</span>
+            <span>右手 (高音譜表)</span>
+          </div>
+          <div class="hand-note-big" id="lblRhNote">Eb4</div>
+          <div class="hand-role-desc" id="lblRhDesc">分解琶音 · 流動旋律</div>
         </div>
       </div>
 
-      <!-- 控制功能列 -->
+      <!-- 新手單鍵指引列 (保留超級新手成就感) -->
+      <div class="beginner-key-hint-row">
+        <div class="target-key-wrapper">
+          <div class="target-key-badge" id="keyBadge">E</div>
+          <div>
+            <div style="font-weight:800; font-size:14px; color:#fff;">MacBook 鍵盤敲擊此鍵</div>
+            <div style="font-size:12px; color:var(--text-muted);" id="lblKeyHintSub">敲擊時，左手低音與右手琶音將在下方完整鋼琴上同時亮起！</div>
+          </div>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted);" id="lblNextPreview">
+          下一個音：Ab4 (按 Y)
+        </div>
+      </div>
+
+      <!-- 49 鍵完整鋼琴視野 (C2 ~ C6) -->
+      <div class="full-piano-wrapper">
+        <div class="piano-region-banner">
+          <div class="region-lh">𝄢 左手低音區 (C2 ~ B3 桃紅光)</div>
+          <div class="region-rh">𝄞 右手中高音區 (C4 ~ C6 天藍光 · 中央C在金點處)</div>
+        </div>
+        <div class="piano-scroll-outer">
+          <div class="piano-board-49" id="pianoBoard49">
+            <div class="white-keys-49" id="whiteKeys49"></div>
+            <div class="black-keys-49" id="blackKeys49"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 控制列 -->
       <div class="control-actions">
         <div style="display:flex; gap:8px;">
           <button class="btn-ctrl" id="btnPrev">◀ 上一個音</button>
@@ -670,7 +796,7 @@
 
   <script>
     // -------------------------------------------------------------
-    // 1. 音訊引擎 (SoundFont 真實取樣 + 物理共振備援)
+    // 1. 音訊引擎 (SoundFont 真實平台鋼琴 + 物理共鳴備援)
     // -------------------------------------------------------------
     let audioCtx = null;
     let realPiano = null;
@@ -808,292 +934,91 @@
     };
 
     // -------------------------------------------------------------
-    // 2. 鍵盤定義 (MacBook 琴鍵)
+    // 2. 49 鍵完整鋼琴建置 (C2 ~ C6: 29 白鍵 + 20 黑鍵)
     // -------------------------------------------------------------
-    const keysDef = [
-      { note: 'C4', pitch: 60, key: 'A', isBlack: false, freq: 261.63, label: 'C4' },
-      { note: 'Db4', pitch: 61, key: 'W', isBlack: true, freq: 277.18, label: 'D♭4' },
-      { note: 'D4', pitch: 62, key: 'S', isBlack: false, freq: 293.66, label: 'D4' },
-      { note: 'Eb4', pitch: 63, key: 'E', isBlack: true, freq: 311.13, label: 'E♭4' },
-      { note: 'E4', pitch: 64, key: 'D', isBlack: false, freq: 329.63, label: 'E4' },
-      { note: 'F4', pitch: 65, key: 'F', isBlack: false, freq: 349.23, label: 'F4' },
-      { note: 'Gb4', pitch: 66, key: 'T', isBlack: true, freq: 369.99, label: 'G♭4' },
-      { note: 'G4', pitch: 67, key: 'G', isBlack: false, freq: 392.00, label: 'G4' },
-      { note: 'Ab4', pitch: 68, key: 'Y', isBlack: true, freq: 415.30, label: 'A♭4' },
-      { note: 'A4', pitch: 69, key: 'H', isBlack: false, freq: 440.00, label: 'A4' },
-      { note: 'Bb4', pitch: 70, key: 'U', isBlack: true, freq: 466.16, label: 'B♭4' },
-      { note: 'B4', pitch: 71, key: 'J', isBlack: false, freq: 493.88, label: 'B4' },
-      { note: 'C5', pitch: 72, key: 'K', isBlack: false, freq: 523.25, label: 'C5' },
-      { note: 'Db5', pitch: 73, key: 'O', isBlack: true, freq: 554.37, label: 'D♭5' },
-      { note: 'D5', pitch: 74, key: 'L', isBlack: false, freq: 587.33, label: 'D5' },
-      { note: 'Eb5', pitch: 75, key: 'P', isBlack: true, freq: 622.25, label: 'E♭5' },
-      { note: 'E5', pitch: 76, key: ';', isBlack: false, freq: 659.25, label: 'E5' },
-      { note: 'F5', pitch: 77, key: "'", isBlack: false, freq: 698.46, label: 'F5' },
-    ];
+    const allKeys49 = [{"note": "C2", "pitch": 36, "octave": 2, "name": "C", "isBlack": false, "freq": 65.41}, {"note": "Db2", "pitch": 37, "octave": 2, "name": "Db", "isBlack": true, "freq": 69.3}, {"note": "D2", "pitch": 38, "octave": 2, "name": "D", "isBlack": false, "freq": 73.42}, {"note": "Eb2", "pitch": 39, "octave": 2, "name": "Eb", "isBlack": true, "freq": 77.78}, {"note": "E2", "pitch": 40, "octave": 2, "name": "E", "isBlack": false, "freq": 82.41}, {"note": "F2", "pitch": 41, "octave": 2, "name": "F", "isBlack": false, "freq": 87.31}, {"note": "Gb2", "pitch": 42, "octave": 2, "name": "Gb", "isBlack": true, "freq": 92.5}, {"note": "G2", "pitch": 43, "octave": 2, "name": "G", "isBlack": false, "freq": 98.0}, {"note": "Ab2", "pitch": 44, "octave": 2, "name": "Ab", "isBlack": true, "freq": 103.83}, {"note": "A2", "pitch": 45, "octave": 2, "name": "A", "isBlack": false, "freq": 110.0}, {"note": "Bb2", "pitch": 46, "octave": 2, "name": "Bb", "isBlack": true, "freq": 116.54}, {"note": "B2", "pitch": 47, "octave": 2, "name": "B", "isBlack": false, "freq": 123.47}, {"note": "C3", "pitch": 48, "octave": 3, "name": "C", "isBlack": false, "freq": 130.81}, {"note": "Db3", "pitch": 49, "octave": 3, "name": "Db", "isBlack": true, "freq": 138.59}, {"note": "D3", "pitch": 50, "octave": 3, "name": "D", "isBlack": false, "freq": 146.83}, {"note": "Eb3", "pitch": 51, "octave": 3, "name": "Eb", "isBlack": true, "freq": 155.56}, {"note": "E3", "pitch": 52, "octave": 3, "name": "E", "isBlack": false, "freq": 164.81}, {"note": "F3", "pitch": 53, "octave": 3, "name": "F", "isBlack": false, "freq": 174.61}, {"note": "Gb3", "pitch": 54, "octave": 3, "name": "Gb", "isBlack": true, "freq": 185.0}, {"note": "G3", "pitch": 55, "octave": 3, "name": "G", "isBlack": false, "freq": 196.0}, {"note": "Ab3", "pitch": 56, "octave": 3, "name": "Ab", "isBlack": true, "freq": 207.65}, {"note": "A3", "pitch": 57, "octave": 3, "name": "A", "isBlack": false, "freq": 220.0}, {"note": "Bb3", "pitch": 58, "octave": 3, "name": "Bb", "isBlack": true, "freq": 233.08}, {"note": "B3", "pitch": 59, "octave": 3, "name": "B", "isBlack": false, "freq": 246.94}, {"note": "C4", "pitch": 60, "octave": 4, "name": "C", "isBlack": false, "freq": 261.63}, {"note": "Db4", "pitch": 61, "octave": 4, "name": "Db", "isBlack": true, "freq": 277.18}, {"note": "D4", "pitch": 62, "octave": 4, "name": "D", "isBlack": false, "freq": 293.66}, {"note": "Eb4", "pitch": 63, "octave": 4, "name": "Eb", "isBlack": true, "freq": 311.13}, {"note": "E4", "pitch": 64, "octave": 4, "name": "E", "isBlack": false, "freq": 329.63}, {"note": "F4", "pitch": 65, "octave": 4, "name": "F", "isBlack": false, "freq": 349.23}, {"note": "Gb4", "pitch": 66, "octave": 4, "name": "Gb", "isBlack": true, "freq": 369.99}, {"note": "G4", "pitch": 67, "octave": 4, "name": "G", "isBlack": false, "freq": 392.0}, {"note": "Ab4", "pitch": 68, "octave": 4, "name": "Ab", "isBlack": true, "freq": 415.3}, {"note": "A4", "pitch": 69, "octave": 4, "name": "A", "isBlack": false, "freq": 440.0}, {"note": "Bb4", "pitch": 70, "octave": 4, "name": "Bb", "isBlack": true, "freq": 466.16}, {"note": "B4", "pitch": 71, "octave": 4, "name": "B", "isBlack": false, "freq": 493.88}, {"note": "C5", "pitch": 72, "octave": 5, "name": "C", "isBlack": false, "freq": 523.25}, {"note": "Db5", "pitch": 73, "octave": 5, "name": "Db", "isBlack": true, "freq": 554.37}, {"note": "D5", "pitch": 74, "octave": 5, "name": "D", "isBlack": false, "freq": 587.33}, {"note": "Eb5", "pitch": 75, "octave": 5, "name": "Eb", "isBlack": true, "freq": 622.25}, {"note": "E5", "pitch": 76, "octave": 5, "name": "E", "isBlack": false, "freq": 659.26}, {"note": "F5", "pitch": 77, "octave": 5, "name": "F", "isBlack": false, "freq": 698.46}, {"note": "Gb5", "pitch": 78, "octave": 5, "name": "Gb", "isBlack": true, "freq": 739.99}, {"note": "G5", "pitch": 79, "octave": 5, "name": "G", "isBlack": false, "freq": 783.99}, {"note": "Ab5", "pitch": 80, "octave": 5, "name": "Ab", "isBlack": true, "freq": 830.61}, {"note": "A5", "pitch": 81, "octave": 5, "name": "A", "isBlack": false, "freq": 880.0}, {"note": "Bb5", "pitch": 82, "octave": 5, "name": "Bb", "isBlack": true, "freq": 932.33}, {"note": "B5", "pitch": 83, "octave": 5, "name": "B", "isBlack": false, "freq": 987.77}, {"note": "C6", "pitch": 84, "octave": 6, "name": "C", "isBlack": false, "freq": 1046.5}];
+    const whiteContainer = document.getElementById('whiteKeys49');
+    const blackContainer = document.getElementById('blackKeys49');
 
-    const keyMap = {};
-    const pitchMap = {};
-    keysDef.forEach(k => {
-      keyMap[k.key.toUpperCase()] = k;
-      pitchMap[k.pitch] = k;
+    // 計算白鍵與黑鍵的精確佈局位置
+    const whiteKeysList = allKeys49.filter(k => !k.isBlack);
+    const totalWhite = whiteKeysList.length; // 29
+
+    // 建立白鍵
+    whiteKeysList.forEach((k, idx) => {
+      const el = document.createElement('div');
+      el.className = 'white-key-49';
+      el.id = `key-49-${k.note}`;
+      if (k.note === 'C4') el.classList.add('middle-c');
+
+      const labelEl = document.createElement('div');
+      labelEl.className = 'white-key-label';
+      labelEl.textContent = (k.name === 'C') ? `${k.note}` : k.name;
+      el.appendChild(labelEl);
+
+      el.addEventListener('mousedown', () => {
+        initAudio();
+        playPianoTone(k.note, k.freq, k.octave < 4, 2.5, 0.6);
+      });
+
+      whiteContainer.appendChild(el);
     });
 
-    const whiteContainer = document.getElementById('whiteKeys');
-    const blackContainer = document.getElementById('blackKeys');
+    // 建立黑鍵 (依照相鄰白鍵的位置比例定位)
+    allKeys49.forEach((k) => {
+      if (k.isBlack) {
+        // 找到它前面的白鍵 index
+        const prevWhite = allKeys49.slice(0, allKeys49.indexOf(k)).filter(x => !x.isBlack);
+        const prevWhiteIdx = prevWhite.length - 1;
 
-    keysDef.forEach(k => {
-      if (!k.isBlack) {
+        // 計算百分比位置 (以 29 個白鍵為基準)
+        const leftPercent = ((prevWhiteIdx + 0.62) / totalWhite) * 100;
+
         const el = document.createElement('div');
-        el.className = 'white-key';
-        el.id = `key-${k.key}`;
-        el.innerHTML = `
-          <div class="kb-badge">${k.key}</div>
-          <div class="note-sub">${k.label}</div>
-        `;
-        el.addEventListener('mousedown', () => pressKey(k.key));
-        whiteContainer.appendChild(el);
+        el.className = 'black-key-49';
+        el.id = `key-49-${k.note}`;
+        el.style.left = `${leftPercent}%`;
 
-        const slot = document.createElement('div');
-        slot.className = 'black-slot';
-        slot.id = `slot-${k.key}`;
-        blackContainer.appendChild(slot);
-      } else {
-        const prev = keysDef[keysDef.indexOf(k) - 1];
-        const slot = document.getElementById(`slot-${prev.key}`);
-        if (slot) {
-          const el = document.createElement('div');
-          el.className = 'black-key';
-          el.id = `key-${k.key}`;
-          el.innerHTML = `
-            <div class="kb-badge">${k.key}</div>
-            <div class="note-sub">${k.label}</div>
-          `;
-          el.addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-            pressKey(k.key);
-          });
-          slot.appendChild(el);
-        }
+        const labelEl = document.createElement('div');
+        labelEl.className = 'black-key-label';
+        labelEl.textContent = k.name;
+        el.appendChild(labelEl);
+
+        el.addEventListener('mousedown', (e) => {
+          e.stopPropagation();
+          initAudio();
+          playPianoTone(k.note, k.freq, k.octave < 4, 2.5, 0.6);
+        });
+
+        blackContainer.appendChild(el);
       }
     });
 
+    // MacBook 鍵盤映射 (右手中高音區快捷鍵)
+    const macbookKeysMap = {
+      'A': 'C4', 'W': 'Db4', 'S': 'D4', 'E': 'Eb4', 'D': 'E4', 'F': 'F4',
+      'T': 'Gb4', 'G': 'G4', 'Y': 'Ab4', 'H': 'A4', 'U': 'Bb4', 'J': 'B4',
+      'K': 'C5', 'O': 'Db5', 'L': 'D5', 'P': 'Eb5', ';': 'E5', "'": 'F5'
+    };
+    const noteToMacKey = {};
+    Object.keys(macbookKeysMap).forEach(k => noteToMacKey[macbookKeysMap[k]] = k);
+
     // -------------------------------------------------------------
-    // 3. 樂譜數據集 (包含完整五線譜 MIDI 音軌 1445 音符)
+    // 3. 樂譜數據集 (全曲 1445 音符 MIDI + 138 小節伴奏)
     // -------------------------------------------------------------
     const fullDemoNotes = [[859, 75, 1407, 0.45], [859, 68, 1452, 0.46], [859, 77, 1545, 0.57], [870, 49, 464, 0.42], [870, 61, 1534, 0.65], [2498, 80, 650, 0.59], [2498, 68, 986, 0.42], [2498, 61, 1450, 0.5], [2568, 77, 255, 0.34], [3009, 77, 1011, 0.41], [3484, 56, 302, 0.28], [3857, 49, 139, 0.46], [4020, 68, 2973, 0.54], [4032, 49, 823, 0.42], [4032, 77, 1509, 0.66], [4880, 61, 1673, 0.5], [4925, 49, 650, 0.54], [5541, 56, 243, 0.43], [5552, 44, 139, 0.27], [5575, 49, 955, 0.45], [5702, 77, 850, 0.42], [6100, 56, 139, 0.36], [6691, 61, 257, 0.31], [7098, 77, 977, 0.57], [7109, 73, 1325, 0.48], [7109, 68, 1475, 0.46], [7109, 54, 2741, 0.5], [8341, 77, 755, 0.36], [8655, 80, 698, 0.57], [8655, 68, 1255, 0.43], [8666, 42, 232, 0.33], [10211, 66, 743, 0.5], [10211, 73, 1475, 0.62], [10245, 54, 1464, 0.49], [11907, 44, 234, 0.61], [12152, 44, 184, 0.63], [12395, 49, 580, 0.61], [12825, 51, 232, 0.66], [13057, 51, 395, 0.64], [13336, 49, 4032, 0.6], [13348, 77, 336, 0.5], [13382, 53, 2859, 0.72], [14975, 80, 198, 0.43], [16520, 68, 441, 0.36], [16543, 77, 418, 0.5], [17043, 51, 614, 0.65], [17518, 53, 198, 0.69], [17716, 53, 836, 0.6], [18066, 61, 150, 0.69], [18077, 49, 811, 0.4], [18216, 61, 139, 0.76], [18355, 61, 220, 0.83], [18575, 60, 873, 0.62], [19134, 56, 1127, 0.54], [19643, 73, 152, 0.34], [19643, 49, 198, 0.35], [19643, 77, 455, 0.38], [19643, 61, 525, 0.35], [19643, 53, 3150, 0.66], [19714, 42, 3161, 0.61], [21248, 80, 255, 0.43], [21259, 61, 568, 0.35], [21318, 68, 382, 0.35], [22805, 46, 789, 0.69], [22875, 42, 3230, 0.58], [22886, 54, 348, 0.34], [22886, 73, 359, 0.43], [22898, 66, 430, 0.43], [23593, 46, 2000, 0.65], [23675, 58, 466, 0.33], [25232, 58, 232, 0.3], [25593, 61, 373, 0.31], [25977, 75, 1461, 0.59], [25977, 61, 1532, 0.64], [26500, 68, 743, 0.65], [27243, 68, 755, 0.63], [27509, 73, 150, 0.34], [27509, 61, 1500, 0.69], [27859, 73, 232, 0.4], [27998, 68, 1011, 0.72], [28300, 75, 568, 0.35], [29009, 68, 520, 0.49], [29009, 61, 534, 0.75], [29009, 73, 568, 0.35], [29530, 68, 745, 0.76], [29543, 61, 732, 0.69], [30264, 73, 186, 0.43], [30275, 61, 220, 0.49], [30275, 68, 280, 0.68], [30518, 56, 186, 0.43], [30518, 75, 1243, 0.47], [30530, 60, 1477, 0.69], [31007, 68, 918, 0.59], [31123, 80, 139, 0.34], [31157, 41, 175, 0.39], [31891, 56, 173, 0.33], [32018, 39, 243, 0.34], [32018, 75, 1475, 0.59], [32018, 58, 1509, 0.65], [32516, 68, 755, 0.57], [33270, 68, 223, 0.54], [33527, 58, 1116, 0.68], [34027, 68, 941, 0.51], [34643, 58, 395, 0.59], [35050, 56, 1498, 0.75], [35061, 77, 720, 0.65], [36002, 77, 325, 0.31], [36548, 56, 1452, 0.63], [37048, 61, 511, 0.78], [37059, 73, 291, 0.36], [37559, 60, 511, 0.66], [38048, 73, 673, 0.58], [38059, 54, 1255, 0.65], [38557, 68, 757, 0.45], [38557, 61, 768, 0.59], [39314, 73, 266, 0.44], [39314, 54, 277, 0.42], [39314, 68, 755, 0.5], [39325, 61, 255, 0.63], [39580, 42, 361, 0.3], [39580, 61, 489, 0.59], [39580, 73, 489, 0.66], [39591, 54, 1464, 0.54], [40068, 68, 998, 0.57], [40068, 61, 1034, 0.67], [40068, 73, 1034, 0.49], [40161, 42, 430, 0.32], [41102, 73, 498, 0.75], [41102, 65, 848, 0.42], [41102, 53, 1232, 0.65], [41600, 61, 734, 0.68], [41600, 68, 734, 0.7], [41600, 73, 734, 0.45], [42334, 61, 243, 0.72], [42334, 73, 243, 0.51], [42334, 53, 255, 0.5], [42334, 68, 766, 0.54], [42577, 61, 523, 0.6], [42577, 73, 534, 0.77], [42589, 65, 141, 0.35], [42589, 53, 1452, 0.61], [43100, 61, 952, 0.68], [43100, 68, 952, 0.59], [43111, 73, 966, 0.54], [44077, 39, 232, 0.27], [44077, 73, 1264, 0.57], [44089, 51, 1207, 0.61], [44575, 78, 186, 0.39], [44586, 61, 743, 0.65], [44586, 66, 743, 0.69], [45330, 61, 268, 0.7], [45330, 66, 768, 0.62], [45341, 73, 257, 0.48], [45598, 61, 500, 0.57], [45598, 73, 500, 0.62], [45609, 70, 268, 0.35], [45609, 51, 1486, 0.59], [45716, 42, 195, 0.35], [46098, 73, 441, 0.43], [46098, 66, 1057, 0.66], [46098, 61, 1068, 0.64], [46109, 78, 164, 0.39], [46759, 73, 407, 0.39], [47155, 44, 186, 0.25], [47155, 66, 1418, 0.57], [47155, 68, 1568, 0.44], [47155, 56, 1661, 0.57], [47166, 61, 1452, 0.63], [47177, 78, 139, 0.39], [47177, 73, 395, 0.31], [47420, 63, 223, 0.35], [47770, 63, 314, 0.32], [48630, 72, 257, 0.58], [48886, 73, 243, 0.73], [49130, 68, 243, 0.39], [49130, 72, 511, 0.58], [49384, 68, 698, 0.52], [49641, 63, 232, 0.75], [49641, 72, 232, 0.47], [49873, 63, 268, 0.5], [49873, 65, 582, 0.52], [49932, 56, 198, 0.36], [49991, 49, 139, 0.4], [50141, 44, 314, 0.28], [50141, 49, 486, 0.69], [50141, 56, 998, 0.57], [50141, 63, 1139, 0.52], [50186, 37, 325, 0.33], [50627, 49, 1011, 0.66], [50627, 65, 1130, 0.61], [50850, 44, 139, 0.32], [51139, 56, 500, 0.77], [51639, 63, 489, 0.66], [51639, 49, 952, 0.46], [51639, 56, 1011, 0.47], [51757, 44, 359, 0.45], [51918, 65, 198, 0.31], [52127, 63, 268, 0.33], [52127, 44, 534, 0.61], [52127, 65, 941, 0.56], [52173, 68, 257, 0.39], [52650, 56, 500, 0.53], [52661, 44, 489, 0.68], [52825, 49, 311, 0.32], [52916, 63, 209, 0.31], [53136, 63, 989, 0.54], [53150, 49, 486, 0.68], [53150, 44, 870, 0.44], [53150, 56, 986, 0.61], [53636, 65, 955, 0.64], [53636, 49, 989, 0.61], [54136, 56, 500, 0.74], [54625, 63, 777, 0.59], [54625, 48, 1475, 0.64], [54636, 56, 243, 0.31], [55111, 65, 768, 0.54], [55368, 39, 232, 0.38], [55368, 56, 732, 0.62], [55414, 51, 186, 0.35], [55611, 51, 525, 0.57], [55623, 72, 257, 0.53], [55648, 63, 314, 0.39], [55902, 39, 198, 0.35], [56111, 39, 198, 0.4], [56123, 73, 455, 0.55], [56136, 53, 509, 0.57], [56136, 58, 741, 0.43], [56136, 46, 1870, 0.47], [56645, 53, 257, 0.73], [56891, 73, 220, 0.44], [56902, 53, 139, 0.76], [57041, 53, 1302, 0.66], [57134, 68, 814, 0.33], [57634, 73, 418, 0.56], [57750, 58, 232, 0.35], [58134, 72, 209, 0.41], [58168, 56, 198, 0.5], [58366, 68, 209, 0.46], [58377, 46, 139, 0.37], [58377, 73, 243, 0.53], [58377, 56, 255, 0.61], [58632, 56, 455, 0.48], [58632, 75, 455, 0.54], [58736, 60, 418, 0.56], [59120, 73, 209, 0.5], [59143, 56, 839, 0.41], [59143, 44, 1489, 0.54], [59166, 63, 618, 0.35], [59191, 61, 686, 0.54], [59877, 73, 277, 0.35], [59877, 61, 823, 0.61], [59934, 63, 280, 0.29], [60132, 68, 198, 0.48], [60132, 56, 220, 0.34], [60620, 80, 393, 0.49], [60632, 56, 486, 0.35], [60632, 44, 509, 0.65], [60875, 73, 255, 0.49], [61118, 56, 605, 0.53], [61130, 75, 186, 0.5], [61130, 49, 489, 0.66], [61607, 72, 245, 0.45], [61618, 48, 511, 0.65], [61677, 44, 139, 0.39], [61852, 73, 266, 0.4], [61898, 68, 186, 0.44], [62118, 73, 616, 0.45], [62130, 49, 164, 0.45], [62130, 61, 777, 0.35], [62189, 42, 1950, 0.62], [62386, 58, 1184, 0.43], [62409, 68, 407, 0.4], [63141, 68, 348, 0.35], [63141, 73, 489, 0.33], [63257, 49, 150, 0.52], [63395, 54, 175, 0.37], [63418, 49, 223, 0.67], [63630, 73, 523, 0.54], [63641, 68, 568, 0.38], [63641, 49, 1230, 0.57], [63745, 61, 393, 0.37], [64139, 42, 964, 0.55], [64152, 54, 452, 0.53], [64314, 60, 291, 0.61], [64511, 68, 209, 0.32], [64627, 75, 373, 0.43], [64743, 61, 139, 0.59], [64870, 49, 245, 0.47], [64882, 77, 234, 0.31], [64895, 61, 243, 0.67], [65139, 61, 220, 0.45], [65139, 73, 500, 0.54], [65161, 68, 466, 0.39], [65161, 41, 477, 0.72], [65232, 65, 395, 0.5], [65639, 68, 220, 0.46], [65639, 73, 500, 0.53], [65639, 41, 1009, 0.58], [65639, 65, 1009, 0.57], [66139, 68, 498, 0.44], [66139, 73, 498, 0.57], [66139, 49, 523, 0.65], [66336, 61, 382, 0.47], [66636, 68, 384, 0.36], [66648, 65, 582, 0.39], [66648, 53, 639, 0.54], [66648, 41, 1418, 0.5], [66661, 49, 743, 0.56], [66789, 56, 1093, 0.51], [67136, 73, 698, 0.45], [67405, 49, 500, 0.65], [67507, 80, 234, 0.36], [67636, 61, 198, 0.42], [67636, 68, 441, 0.46], [67893, 56, 220, 0.51], [67893, 65, 220, 0.38], [67893, 77, 336, 0.36], [67905, 49, 243, 0.6], [68136, 58, 441, 0.39], [68148, 39, 1486, 0.73], [68182, 54, 441, 0.5], [68636, 54, 509, 0.72], [69052, 73, 186, 0.31], [69145, 54, 1000, 0.68], [69518, 78, 175, 0.31], [69634, 39, 1407, 0.49], [70145, 53, 186, 0.59], [70145, 46, 907, 0.53], [70332, 53, 348, 0.72], [70657, 68, 139, 0.36], [70657, 49, 255, 0.61], [70657, 73, 348, 0.52], [70716, 61, 430, 0.39], [70911, 49, 350, 0.64], [71157, 73, 489, 0.53], [71157, 61, 616, 0.36], [71180, 44, 930, 0.57], [71284, 51, 873, 0.51], [71645, 73, 498, 0.5], [71657, 68, 486, 0.4], [72143, 68, 466, 0.52], [72143, 73, 500, 0.64], [72168, 51, 486, 0.57], [72168, 56, 486, 0.43], [72168, 39, 707, 0.37], [72655, 51, 164, 0.54], [72655, 44, 452, 0.39], [72655, 72, 500, 0.53], [72655, 56, 511, 0.73], [72666, 75, 500, 0.47], [72818, 51, 336, 0.64], [73155, 51, 455, 0.52], [73155, 72, 477, 0.54], [73166, 56, 477, 0.66], [73166, 75, 477, 0.65], [73236, 44, 280, 0.34], [73632, 72, 475, 0.57], [73643, 75, 452, 0.65], [73643, 56, 500, 0.61], [73886, 44, 186, 0.39], [74132, 77, 509, 0.57], [74143, 65, 498, 0.5], [74143, 53, 743, 0.74], [74641, 69, 232, 0.74], [74641, 65, 245, 0.51], [74873, 69, 280, 0.67], [74873, 84, 361, 0.37], [74886, 65, 698, 0.46], [74886, 72, 720, 0.52], [74886, 53, 755, 0.67], [75152, 69, 757, 0.64], [75373, 60, 186, 0.43], [75630, 65, 430, 0.35], [75630, 77, 477, 0.67], [75641, 53, 661, 0.45], [76130, 69, 511, 0.65], [76130, 48, 523, 0.73], [76361, 72, 280, 0.58], [76443, 57, 314, 0.37], [76466, 53, 161, 0.35], [76641, 65, 300, 0.31], [76641, 72, 300, 0.41], [76641, 53, 498, 0.71], [76641, 69, 520, 0.72], [76652, 48, 498, 0.65], [77139, 77, 686, 0.57], [77139, 53, 745, 0.59], [77150, 45, 1000, 0.7], [77627, 57, 523, 0.38], [77639, 69, 280, 0.46], [77884, 53, 266, 0.75], [78150, 53, 314, 0.75], [78150, 69, 441, 0.46], [78150, 45, 452, 0.57], [78150, 57, 882, 0.45], [78464, 53, 511, 0.54], [78627, 77, 743, 0.48], [78695, 63, 441, 0.54], [78732, 45, 325, 0.39], [78732, 69, 382, 0.35], [79125, 57, 336, 0.38], [79125, 69, 570, 0.58], [79136, 63, 582, 0.59], [79382, 72, 245, 0.5], [79416, 53, 130, 0.32], [79627, 75, 348, 0.43], [79627, 48, 557, 0.68], [79730, 65, 477, 0.45], [80136, 61, 441, 0.4], [80136, 73, 511, 0.57], [80136, 58, 859, 0.39], [80148, 46, 500, 0.59], [80648, 72, 243, 0.57], [80648, 46, 255, 0.61], [80707, 61, 184, 0.36], [80891, 73, 582, 0.5], [80902, 61, 734, 0.64], [80902, 46, 1245, 0.54], [81159, 68, 907, 0.42], [81625, 73, 475, 0.47], [81636, 61, 755, 0.66], [82134, 58, 443, 0.41], [82148, 46, 486, 0.62], [82286, 65, 220, 0.32], [82380, 73, 348, 0.37], [82391, 61, 743, 0.6], [82634, 75, 430, 0.54], [82634, 45, 582, 0.7], [83111, 73, 150, 0.46], [83134, 61, 545, 0.6], [83145, 56, 977, 0.37], [83216, 44, 1184, 0.56], [83693, 60, 416, 0.5], [83877, 73, 257, 0.43], [84123, 56, 277, 0.45], [84134, 73, 184, 0.38], [84134, 68, 232, 0.47], [84400, 44, 220, 0.68], [84400, 56, 220, 0.57], [84620, 56, 314, 0.39], [84620, 77, 407, 0.46], [84620, 44, 895, 0.48], [84657, 53, 591, 0.65], [85120, 73, 500, 0.68], [85120, 51, 548, 0.54], [85620, 72, 257, 0.47], [85620, 49, 384, 0.61], [85725, 44, 268, 0.43], [85784, 61, 348, 0.39], [86005, 49, 139, 0.61], [86132, 42, 175, 0.31], [86132, 39, 766, 0.66], [86143, 51, 232, 0.41], [86143, 54, 489, 0.55], [86143, 58, 489, 0.43], [86143, 61, 489, 0.62], [86632, 66, 370, 0.31], [86632, 61, 498, 0.65], [86632, 54, 509, 0.65], [86632, 58, 998, 0.51], [86666, 42, 382, 0.38], [86886, 51, 675, 0.48], [86898, 39, 232, 0.69], [87130, 39, 489, 0.68], [87130, 61, 500, 0.7], [87141, 42, 339, 0.43], [87141, 54, 489, 0.68], [87618, 39, 825, 0.62], [87630, 58, 466, 0.52], [87630, 61, 720, 0.61], [87630, 54, 1173, 0.6], [87643, 51, 325, 0.41], [88164, 42, 941, 0.38], [88398, 51, 243, 0.64], [88443, 39, 639, 0.5], [88489, 60, 257, 0.48], [88641, 63, 418, 0.46], [88641, 51, 486, 0.52], [88745, 61, 150, 0.54], [88884, 65, 336, 0.54], [88895, 61, 268, 0.59], [89127, 43, 141, 0.59], [89164, 61, 732, 0.59], [89268, 43, 384, 0.7], [89302, 58, 327, 0.47], [89641, 39, 511, 0.45], [89641, 51, 511, 0.37], [89641, 58, 511, 0.65], [89652, 55, 500, 0.57], [89652, 43, 998, 0.58], [90152, 55, 464, 0.52], [90152, 51, 486, 0.59], [90152, 58, 545, 0.68], [90152, 39, 695, 0.45], [90650, 43, 1011, 0.68], [90661, 55, 186, 0.29], [90661, 63, 593, 0.61], [90998, 46, 141, 0.44], [91139, 65, 3577, 0.51], [91150, 58, 234, 0.35], [91150, 46, 964, 0.6], [91650, 39, 198, 0.38], [91650, 51, 500, 0.5], [91650, 61, 511, 0.49], [91661, 43, 452, 0.5], [92150, 73, 150, 0.33], [92161, 56, 1243, 0.51], [92161, 61, 1498, 0.58], [92173, 44, 1232, 0.49], [93405, 44, 280, 0.67], [93405, 56, 280, 0.39], [93684, 44, 509, 0.57], [93684, 56, 509, 0.76], [94182, 54, 1011, 0.5], [94193, 44, 384, 0.48], [94193, 56, 500, 0.5], [94473, 61, 161, 0.34], [94693, 56, 3334, 0.57], [94809, 44, 452, 0.4], [94843, 65, 395, 0.43], [95273, 44, 1441, 0.64], [95273, 63, 1455, 0.46], [95273, 60, 2941, 0.61], [96877, 44, 791, 0.45], [96923, 63, 1105, 0.43], [98307, 61, 1498, 0.54], [98318, 49, 766, 0.74], [98818, 56, 498, 0.69], [99084, 49, 720, 0.74], [99316, 56, 1000, 0.7], [99805, 61, 593, 0.48], [99805, 49, 780, 0.71], [100316, 56, 500, 0.74], [100584, 49, 732, 0.74], [100816, 56, 500, 0.76], [101302, 61, 780, 0.61], [101316, 56, 489, 0.63], [101316, 49, 755, 0.71], [101805, 56, 498, 0.72], [102070, 49, 232, 0.69], [102302, 49, 511, 0.69], [102302, 56, 1000, 0.6], [102802, 60, 743, 0.62], [102814, 48, 732, 0.69], [103302, 56, 511, 0.69], [103545, 48, 268, 0.79], [103802, 88, 220, 0.36], [103802, 60, 475, 0.54], [103814, 56, 475, 0.61], [103814, 48, 545, 0.69], [104302, 46, 755, 0.57], [104302, 61, 1034, 0.57], [104800, 56, 257, 0.72], [105057, 46, 232, 0.69], [105057, 56, 243, 0.66], [105289, 46, 511, 0.63], [105300, 75, 175, 0.33], [105300, 56, 989, 0.65], [105591, 61, 186, 0.38], [105789, 73, 580, 0.35], [105789, 61, 709, 0.64], [105800, 46, 511, 0.68], [106289, 56, 509, 0.68], [106311, 46, 232, 0.55], [106543, 46, 266, 0.63], [106798, 75, 152, 0.41], [106798, 56, 489, 0.67], [106809, 46, 477, 0.68], [107111, 61, 164, 0.31], [107275, 61, 975, 0.61], [107286, 46, 489, 0.59], [107286, 56, 489, 0.59], [107775, 46, 255, 0.48], [107775, 56, 523, 0.71], [108030, 46, 268, 0.65], [108298, 46, 486, 0.63], [108298, 56, 500, 0.68], [108380, 61, 243, 0.38], [108784, 44, 491, 0.72], [108798, 56, 477, 0.37], [108798, 60, 732, 0.69], [108948, 63, 407, 0.37], [109275, 44, 255, 0.65], [109275, 56, 336, 0.62], [109530, 44, 255, 0.7], [109530, 60, 255, 0.6], [109773, 63, 511, 0.39], [109784, 44, 477, 0.61], [109784, 60, 511, 0.7], [110295, 61, 593, 0.46], [110295, 42, 766, 0.66], [110807, 56, 500, 0.65], [111061, 42, 745, 0.67], [111307, 56, 511, 0.6], [111807, 61, 789, 0.5], [111807, 42, 1523, 0.66], [111818, 56, 486, 0.43], [112305, 56, 489, 0.64], [112793, 56, 1011, 0.54], [113305, 61, 709, 0.59], [113330, 41, 964, 0.59], [113805, 56, 500, 0.7], [114305, 41, 509, 0.54], [114305, 56, 1000, 0.73], [114814, 41, 664, 0.62], [114814, 61, 780, 0.61], [115305, 56, 498, 0.77], [115477, 41, 814, 0.56], [115802, 56, 557, 0.65], [116291, 46, 220, 0.33], [116302, 39, 766, 0.74], [116302, 61, 1093, 0.57], [116802, 54, 489, 0.37], [116836, 42, 348, 0.32], [117068, 39, 732, 0.76], [117291, 54, 509, 0.61], [117302, 66, 139, 0.34], [117800, 54, 523, 0.52], [117800, 39, 791, 0.67], [117800, 61, 1232, 0.58], [118323, 54, 489, 0.61], [118591, 39, 709, 0.73], [118777, 58, 500, 0.4], [118811, 54, 616, 0.62], [119300, 39, 336, 0.43], [119300, 44, 743, 0.58], [119300, 61, 1102, 0.58], [119800, 56, 498, 0.64], [120043, 44, 255, 0.64], [120298, 44, 500, 0.58], [120298, 56, 500, 0.66], [120798, 56, 500, 0.44], [120798, 63, 500, 0.54], [120798, 44, 757, 0.64], [121298, 63, 268, 0.39], [121298, 56, 511, 0.64], [121555, 44, 277, 0.66], [121809, 68, 209, 0.41], [121809, 56, 500, 0.62], [121832, 44, 511, 0.58], [122309, 56, 498, 0.41], [122309, 49, 766, 0.7], [122309, 61, 1498, 0.53], [122807, 56, 500, 0.76], [123075, 49, 732, 0.72], [123307, 56, 1000, 0.76], [123807, 49, 766, 0.72], [123807, 61, 1323, 0.5], [124307, 56, 523, 0.72], [124573, 49, 257, 0.74], [124830, 49, 477, 0.76], [124830, 56, 477, 0.76], [125295, 61, 730, 0.67], [125307, 56, 498, 0.61], [125307, 49, 755, 0.7], [125805, 56, 500, 0.75], [126061, 49, 255, 0.7], [126305, 56, 511, 0.77], [126316, 49, 500, 0.71], [126816, 56, 477, 0.48], [126816, 48, 489, 0.75], [126816, 60, 545, 0.44], [127293, 56, 511, 0.73], [127305, 48, 243, 0.71], [127548, 48, 257, 0.77], [127791, 60, 500, 0.56], [127805, 56, 520, 0.68], [127805, 48, 545, 0.69], [128302, 73, 314, 0.31], [128302, 46, 511, 0.61], [128302, 61, 1489, 0.52], [128570, 58, 198, 0.36], [128814, 46, 243, 0.58], [128814, 56, 500, 0.68], [128964, 58, 268, 0.36], [129057, 46, 745, 0.57], [129314, 56, 489, 0.69], [129373, 58, 314, 0.36], [129791, 58, 452, 0.33], [129791, 61, 1159, 0.57], [129802, 56, 498, 0.5], [129802, 46, 755, 0.6], [130300, 56, 500, 0.65], [130545, 58, 359, 0.31], [130557, 46, 255, 0.66], [130800, 56, 489, 0.75], [130811, 46, 477, 0.61], [131080, 61, 198, 0.34], [131289, 58, 141, 0.28], [131289, 73, 302, 0.3], [131289, 56, 500, 0.61], [131289, 46, 511, 0.68], [131289, 61, 1430, 0.56], [131614, 58, 291, 0.31], [131789, 56, 511, 0.71], [131800, 46, 243, 0.6], [132043, 46, 268, 0.67], [132300, 56, 498, 0.72], [132311, 46, 441, 0.59], [132786, 44, 500, 0.68], [132798, 56, 502, 0.39], [132798, 60, 1000, 0.71], [132973, 63, 407, 0.32], [133286, 44, 268, 0.55], [133300, 56, 1009, 0.58], [133555, 44, 695, 0.63], [133798, 60, 500, 0.72], [133925, 63, 302, 0.35], [134286, 42, 545, 0.69], [134298, 61, 511, 0.48], [134309, 56, 500, 0.54], [134809, 56, 500, 0.69], [134809, 61, 500, 0.57], [134832, 42, 477, 0.67], [135309, 61, 498, 0.61], [135309, 56, 511, 0.73], [135309, 42, 998, 0.6], [135807, 61, 500, 0.66], [135820, 56, 486, 0.71], [136307, 42, 257, 0.46], [136307, 61, 489, 0.69], [136307, 56, 500, 0.72], [136550, 54, 245, 0.47], [136564, 42, 207, 0.44], [136795, 73, 255, 0.33], [136795, 42, 430, 0.38], [136795, 54, 452, 0.35], [136795, 61, 523, 0.71], [136807, 56, 511, 0.73], [137307, 41, 139, 0.58], [137307, 53, 464, 0.46], [137318, 49, 209, 0.4], [137318, 61, 489, 0.62], [137318, 56, 500, 0.61], [137445, 41, 627, 0.58], [137807, 61, 509, 0.74], [137818, 56, 498, 0.73], [137980, 49, 407, 0.35], [138073, 41, 243, 0.53], [138073, 53, 395, 0.44], [138316, 41, 500, 0.5], [138316, 56, 500, 0.76], [138316, 61, 500, 0.73], [138643, 49, 243, 0.37], [138816, 53, 198, 0.39], [138816, 41, 432, 0.51], [138816, 56, 477, 0.72], [138816, 61, 477, 0.76], [139293, 73, 361, 0.33], [139293, 56, 511, 0.72], [139293, 61, 511, 0.75], [139550, 41, 695, 0.43], [139550, 53, 718, 0.54], [139805, 73, 336, 0.32], [139805, 61, 511, 0.75], [139805, 56, 545, 0.69], [140316, 66, 150, 0.37], [140316, 54, 486, 0.46], [140316, 61, 486, 0.57], [140327, 39, 720, 0.67], [140327, 51, 732, 0.43], [140802, 54, 500, 0.46], [140802, 61, 500, 0.67], [140839, 42, 384, 0.38], [141048, 39, 255, 0.62], [141059, 51, 243, 0.54], [141302, 66, 198, 0.38], [141302, 61, 500, 0.72], [141302, 39, 511, 0.65], [141302, 51, 511, 0.39], [141302, 54, 511, 0.54], [141361, 42, 370, 0.33], [141802, 61, 511, 0.65], [141814, 42, 302, 0.41], [141814, 54, 500, 0.53], [141814, 51, 743, 0.59], [141814, 39, 1568, 0.61], [142314, 61, 511, 0.66], [142314, 54, 1000, 0.42], [142557, 51, 825, 0.63], [142616, 42, 209, 0.36], [142825, 61, 557, 0.67], [142836, 42, 523, 0.44], [143370, 44, 1557, 0.56], [143370, 56, 2602, 0.43], [143382, 51, 175, 0.4], [143382, 42, 209, 0.36], [143382, 61, 1534, 0.51], [143382, 54, 2591, 0.48], [143661, 63, 2300, 0.46], [144334, 66, 373, 0.35], [145393, 75, 139, 0.34], [146368, 42, 161, 0.32], [146541, 63, 502, 0.72], [146541, 42, 1198, 0.57], [146809, 65, 234, 0.53], [147043, 65, 243, 0.36], [147043, 63, 486, 0.56], [147043, 56, 743, 0.54], [147286, 65, 500, 0.51], [147530, 63, 511, 0.5], [147786, 56, 255, 0.57], [147786, 65, 300, 0.52], [148041, 56, 150, 0.39], [148041, 63, 605, 0.48], [148075, 42, 1430, 0.46], [148284, 65, 245, 0.53], [148530, 56, 557, 0.4], [148575, 51, 220, 0.4], [148841, 53, 350, 0.6], [149030, 63, 291, 0.48], [149086, 56, 164, 0.64], [149250, 56, 243, 0.56], [149284, 61, 209, 0.49], [149320, 63, 243, 0.46], [149411, 44, 186, 0.49], [149564, 63, 173, 0.41], [149598, 44, 500, 0.61], [149807, 65, 489, 0.46], [149852, 61, 234, 0.58], [150050, 63, 314, 0.47], [150050, 56, 720, 0.54], [150098, 44, 314, 0.47], [150120, 60, 220, 0.56], [150295, 65, 475, 0.41], [150411, 61, 161, 0.63], [150527, 63, 243, 0.47], [150539, 44, 161, 0.4], [150573, 60, 186, 0.57], [150770, 61, 164, 0.68], [150770, 65, 280, 0.59], [150770, 56, 536, 0.46], [150852, 44, 152, 0.39], [150934, 61, 139, 0.6], [151016, 44, 523, 0.6], [151027, 63, 220, 0.39], [151270, 65, 175, 0.4], [151293, 61, 141, 0.79], [151434, 61, 198, 0.65], [151527, 72, 209, 0.38], [151527, 56, 255, 0.4], [151539, 44, 370, 0.5], [151539, 63, 486, 0.42], [151770, 65, 325, 0.5], [151782, 56, 243, 0.49], [151841, 60, 161, 0.54], [152025, 63, 361, 0.55], [152025, 56, 373, 0.54], [152282, 51, 150, 0.69], [152282, 61, 277, 0.55], [152432, 51, 164, 0.56], [152525, 46, 455, 0.42], [152548, 53, 489, 0.49], [152559, 60, 186, 0.38], [152791, 61, 491, 0.57], [153036, 53, 466, 0.57], [153036, 56, 559, 0.43], [153282, 61, 243, 0.61], [153502, 53, 509, 0.63], [153525, 60, 232, 0.46], [153757, 61, 255, 0.55], [153768, 56, 280, 0.5], [154000, 46, 650, 0.46], [154011, 41, 175, 0.32], [154011, 60, 209, 0.41], [154011, 53, 500, 0.55], [154257, 61, 255, 0.65], [154500, 56, 243, 0.54], [154511, 60, 314, 0.51], [154511, 53, 384, 0.48], [154523, 41, 430, 0.37], [154743, 56, 1257, 0.49], [154825, 60, 175, 0.59], [154989, 51, 511, 0.55], [155000, 60, 348, 0.57], [155243, 53, 198, 0.35], [155348, 61, 443, 0.5], [155489, 44, 743, 0.43], [155500, 51, 684, 0.45], [155545, 65, 232, 0.37], [155743, 53, 232, 0.42], [155791, 61, 209, 0.53], [156000, 56, 859, 0.53], [156232, 61, 684, 0.49], [156486, 51, 220, 0.47], [156486, 63, 325, 0.43], [156741, 53, 141, 0.76], [156870, 44, 152, 0.49], [156882, 53, 430, 0.48], [156975, 56, 545, 0.47], [157023, 44, 800, 0.5], [157475, 73, 220, 0.38], [157475, 61, 452, 0.59], [157545, 53, 289, 0.33], [157580, 68, 395, 0.49], [157695, 56, 605, 0.33], [157986, 60, 509, 0.58], [157998, 51, 511, 0.52], [158495, 61, 443, 0.38], [158509, 42, 243, 0.51], [158532, 30, 2811, 0.5], [158939, 42, 802, 0.38], [158950, 58, 139, 0.51], [159264, 65, 243, 0.39], [159264, 61, 477, 0.45], [159275, 56, 452, 0.5], [159507, 65, 198, 0.49], [159752, 42, 1277, 0.47], [159868, 61, 150, 0.4], [160018, 68, 291, 0.39], [160018, 56, 336, 0.46], [160018, 61, 348, 0.5], [160355, 56, 141, 0.5], [160518, 63, 277, 0.58], [160784, 56, 141, 0.37], [160784, 68, 141, 0.62], [160795, 63, 223, 0.42], [160925, 68, 152, 0.66], [161030, 42, 489, 0.45], [161077, 68, 243, 0.57], [161273, 60, 245, 0.51], [161518, 73, 348, 0.48], [161518, 41, 486, 0.44], [161518, 61, 498, 0.56], [161530, 68, 266, 0.57], [161657, 29, 280, 0.36], [161795, 68, 605, 0.49], [162016, 41, 141, 0.31], [162016, 61, 268, 0.4], [162157, 41, 627, 0.42], [162273, 56, 743, 0.52], [162284, 61, 359, 0.58], [162284, 65, 359, 0.43], [162643, 60, 373, 0.54], [162784, 41, 709, 0.46], [163016, 61, 164, 0.67], [163016, 56, 452, 0.47], [163180, 61, 325, 0.7], [163505, 61, 452, 0.6], [163516, 73, 291, 0.39], [163550, 53, 361, 0.4], [163620, 63, 266, 0.51], [163886, 63, 186, 0.57], [164027, 41, 370, 0.41], [164027, 51, 441, 0.46], [164027, 60, 486, 0.53], [164039, 65, 198, 0.5], [164200, 29, 268, 0.43], [164236, 65, 173, 0.63], [164409, 65, 209, 0.5], [164514, 35, 175, 0.24], [164514, 42, 1186, 0.39], [164525, 73, 198, 0.43], [164525, 47, 502, 0.42], [164525, 61, 593, 0.5], [164630, 66, 652, 0.42], [164700, 30, 418, 0.37], [165027, 47, 405, 0.43], [165270, 68, 173, 0.27], [165282, 61, 684, 0.5], [165316, 30, 545, 0.32], [165327, 56, 455, 0.54], [165352, 66, 336, 0.33], [165584, 47, 198, 0.28], [165689, 66, 161, 0.41], [165782, 56, 300, 0.43], [165793, 47, 255, 0.4], [165850, 66, 198, 0.36], [166025, 42, 232, 0.29], [166048, 66, 164, 0.37], [166048, 47, 627, 0.35], [166048, 63, 698, 0.48], [166082, 56, 350, 0.5], [166107, 35, 591, 0.41], [166211, 66, 220, 0.45], [166432, 66, 232, 0.57], [166432, 56, 359, 0.39], [166466, 44, 164, 0.32], [166664, 66, 234, 0.34], [166791, 61, 745, 0.57], [166791, 56, 873, 0.48], [166814, 42, 525, 0.39], [166850, 30, 280, 0.38], [166966, 65, 152, 0.45], [167118, 65, 173, 0.57], [167291, 65, 141, 0.61], [167291, 47, 220, 0.47], [167432, 65, 184, 0.51], [167536, 61, 741, 0.54], [167536, 44, 1602, 0.5], [167616, 32, 1848, 0.48], [168057, 51, 186, 0.37], [168127, 63, 1000, 0.52], [168557, 54, 630, 0.46], [168848, 51, 291, 0.33], [169139, 56, 314, 0.37], [169139, 44, 732, 0.57], [169139, 60, 1720, 0.58], [169139, 63, 1777, 0.69], [169150, 51, 1602, 0.44], [169836, 68, 161, 0.32], [169975, 56, 811, 0.43], [170416, 44, 280, 0.34], [170927, 75, 314, 0.35], [170975, 77, 964, 0.47], [170975, 61, 1241, 0.69], [171159, 68, 848, 0.4], [171659, 75, 220, 0.35], [172216, 75, 350, 0.32], [172216, 77, 455, 0.57], [172216, 61, 1825, 0.64], [172634, 73, 223, 0.32], [172645, 65, 548, 0.44], [172750, 68, 293, 0.36], [173055, 68, 139, 0.67], [173193, 68, 825, 0.6], [173286, 75, 557, 0.4], [173414, 73, 430, 0.35], [173414, 77, 430, 0.43], [174180, 68, 280, 0.41], [174586, 61, 175, 0.4], [175564, 56, 243, 0.39], [175564, 75, 1441, 0.57], [175586, 60, 1486, 0.69], [175761, 68, 534, 0.37], [176120, 56, 523, 0.45], [176945, 68, 152, 0.26], [177098, 77, 486, 0.45], [177098, 58, 3007, 0.68], [177109, 68, 1461, 0.54], [178398, 77, 139, 0.31], [178618, 80, 545, 0.57], [178618, 68, 1452, 0.47], [180127, 56, 3000, 0.64], [183127, 56, 498, 0.6], [183127, 61, 498, 0.45], [183139, 42, 498, 0.7], [183625, 61, 500, 0.53], [183625, 56, 511, 0.65], [183636, 42, 500, 0.67], [184125, 61, 511, 0.57], [184136, 42, 500, 0.72], [184136, 56, 500, 0.69], [184636, 42, 466, 0.61], [184636, 56, 489, 0.7], [184636, 61, 489, 0.66], [184789, 54, 277, 0.35], [185125, 56, 511, 0.65], [185125, 61, 511, 0.63], [185380, 42, 209, 0.49], [185380, 54, 257, 0.45], [185439, 46, 184, 0.43], [185636, 54, 370, 0.37], [185636, 61, 498, 0.6], [185636, 56, 509, 0.6], [185764, 42, 325, 0.42], [185809, 48, 152, 0.46], [185973, 48, 161, 0.61], [186134, 61, 500, 0.62], [186145, 56, 489, 0.43], [186145, 49, 500, 0.48], [186157, 41, 1373, 0.48], [186414, 51, 243, 0.44], [186634, 56, 489, 0.55], [186634, 61, 489, 0.5], [186645, 49, 477, 0.46], [186868, 53, 209, 0.31], [186880, 63, 173, 0.28], [186880, 51, 255, 0.54], [187123, 49, 348, 0.54], [187123, 61, 500, 0.64], [187123, 56, 511, 0.58], [187343, 51, 139, 0.66], [187482, 51, 164, 0.57], [187623, 61, 498, 0.65], [187634, 41, 370, 0.43], [187634, 56, 498, 0.57], [187645, 53, 418, 0.57], [187877, 51, 220, 0.5], [188120, 61, 511, 0.63], [188132, 49, 245, 0.59], [188132, 56, 500, 0.6], [188377, 53, 161, 0.36], [188561, 49, 152, 0.51], [188632, 56, 489, 0.6], [188632, 61, 489, 0.62], [188725, 49, 175, 0.55], [188830, 51, 152, 0.63], [188900, 68, 150, 0.37], [188982, 51, 150, 0.45], [189120, 56, 384, 0.37], [189120, 61, 500, 0.46], [189132, 42, 152, 0.29], [189132, 51, 291, 0.35], [189132, 39, 1520, 0.64], [189202, 53, 325, 0.39], [189620, 61, 498, 0.57], [189620, 54, 511, 0.47], [189677, 46, 407, 0.39], [189689, 42, 325, 0.38], [189864, 51, 441, 0.43], [190118, 61, 511, 0.64], [190132, 66, 139, 0.3], [190132, 54, 498, 0.58], [190189, 42, 430, 0.32], [190327, 48, 245, 0.57], [190630, 42, 245, 0.47], [190630, 61, 477, 0.59], [190630, 54, 489, 0.55], [190630, 51, 582, 0.46], [190641, 49, 502, 0.5], [190652, 39, 455, 0.57], [191107, 39, 257, 0.54], [191107, 61, 511, 0.65], [191107, 42, 523, 0.37], [191118, 54, 500, 0.74], [191364, 51, 441, 0.43], [191364, 39, 834, 0.57], [191618, 66, 232, 0.35], [191618, 61, 511, 0.65], [191618, 54, 1500, 0.46], [191630, 42, 661, 0.35], [191677, 58, 161, 0.64], [191839, 58, 336, 0.68], [192130, 44, 498, 0.57], [192130, 61, 498, 0.61], [192141, 51, 395, 0.3], [192186, 32, 630, 0.4], [192339, 56, 361, 0.38], [192627, 44, 200, 0.46], [192627, 61, 491, 0.61], [192873, 56, 593, 0.33], [192884, 44, 209, 0.46], [193118, 54, 475, 0.48], [193118, 61, 520, 0.71], [193466, 44, 150, 0.42], [193627, 44, 234, 0.64], [193639, 61, 511, 0.54], [193709, 32, 616, 0.43], [193861, 44, 382, 0.6], [194139, 63, 152, 0.29], [194139, 56, 243, 0.32], [194150, 61, 500, 0.52], [194243, 44, 150, 0.49], [194382, 56, 268, 0.37], [194393, 44, 257, 0.52], [194639, 63, 209, 0.31], [194650, 61, 489, 0.54], [194650, 44, 500, 0.5], [194650, 56, 616, 0.53], [194709, 32, 150, 0.32], [194802, 68, 266, 0.38], [195139, 65, 164, 0.38], [195139, 61, 314, 0.38], [195150, 44, 395, 0.39], [195150, 37, 1720, 0.64], [195870, 65, 616, 0.46], [196486, 65, 616, 0.53], [198077, 37, 1336, 0.61], [198089, 44, 302, 0.46], [198100, 65, 220, 0.37], [198589, 49, 209, 0.33], [198880, 56, 150, 0.39], [199552, 57, 384, 0.33], [199552, 63, 650, 0.5], [199577, 29, 1080, 0.61], [199611, 68, 220, 0.64], [199832, 68, 175, 0.71], [200007, 68, 243, 0.61], [200250, 33, 209, 0.64], [200284, 45, 348, 0.37], [200284, 66, 443, 0.61], [200295, 63, 593, 0.43], [200459, 33, 559, 0.74], [200727, 66, 161, 0.67], [200889, 66, 291, 0.45], [201018, 56, 498, 0.45], [201018, 61, 1020, 0.48], [201018, 34, 2925, 0.62], [201516, 56, 500, 0.54], [201527, 65, 500, 0.5], [202016, 56, 500, 0.55], [202027, 65, 489, 0.49], [202039, 61, 489, 0.59], [202516, 56, 477, 0.57], [202516, 65, 489, 0.46], [202527, 61, 477, 0.57], [202993, 56, 520, 0.46], [203005, 65, 255, 0.5], [203005, 61, 498, 0.5], [203095, 48, 141, 0.44], [203248, 53, 186, 0.39], [203248, 49, 266, 0.43], [203502, 61, 511, 0.55], [203514, 53, 384, 0.48], [203514, 56, 511, 0.59], [204014, 61, 489, 0.49], [204048, 32, 989, 0.67], [204234, 56, 268, 0.41], [204502, 61, 243, 0.67], [204514, 56, 280, 0.46], [204745, 61, 245, 0.69], [204745, 53, 339, 0.31], [204991, 61, 486, 0.57], [205014, 63, 511, 0.49], [205036, 32, 930, 0.68], [205059, 44, 186, 0.33], [205489, 65, 220, 0.45], [205489, 56, 500, 0.57], [205489, 53, 732, 0.4], [205605, 61, 152, 0.31], [205966, 32, 768, 0.54], [205989, 56, 500, 0.39], [206000, 65, 139, 0.4], [206059, 44, 382, 0.45], [206139, 65, 152, 0.45], [206291, 65, 173, 0.5], [206302, 41, 150, 0.31], [206464, 41, 316, 0.46], [206464, 29, 525, 0.59], [206477, 60, 314, 0.35], [206477, 44, 384, 0.34], [206489, 56, 430, 0.56], [206918, 56, 557, 0.47], [206977, 61, 209, 0.38], [207059, 30, 2925, 0.71], [207243, 49, 570, 0.31], [207373, 58, 1032, 0.37], [207475, 61, 209, 0.34], [207475, 56, 418, 0.43], [207964, 61, 511, 0.48], [207975, 56, 500, 0.35], [208464, 54, 570, 0.38], [208475, 61, 489, 0.5], [208475, 56, 500, 0.41], [208743, 58, 220, 0.5], [208964, 61, 500, 0.57], [208975, 56, 475, 0.57], [209450, 56, 511, 0.6], [209464, 61, 220, 0.65], [209684, 61, 289, 0.67], [209950, 41, 243, 0.3], [209961, 56, 500, 0.54], [209973, 61, 477, 0.59], [209998, 29, 2927, 0.67], [210450, 61, 489, 0.54], [210461, 56, 477, 0.63], [210939, 56, 255, 0.53], [210939, 61, 500, 0.57], [211193, 56, 245, 0.56], [211439, 53, 150, 0.3], [211439, 56, 498, 0.56], [211439, 61, 509, 0.64], [211936, 56, 500, 0.53], [211948, 61, 325, 0.71], [212193, 53, 359, 0.32], [212273, 61, 652, 0.61], [212436, 56, 523, 0.61], [212914, 54, 418, 0.34], [212925, 61, 755, 0.43], [212936, 27, 1464, 0.59], [213193, 65, 195, 0.35], [213530, 66, 393, 0.46], [213668, 54, 580, 0.38], [213680, 51, 164, 0.39], [213680, 61, 545, 0.43], [213923, 39, 455, 0.35], [214411, 56, 523, 0.53], [214423, 63, 198, 0.33], [214423, 61, 523, 0.5], [214457, 29, 443, 0.65], [214900, 29, 1045, 0.68], [214934, 56, 220, 0.46], [215155, 65, 164, 0.31], [215155, 56, 500, 0.46], [215155, 61, 511, 0.39], [215155, 63, 593, 0.37], [215389, 41, 195, 0.42], [215655, 56, 255, 0.43], [215666, 61, 243, 0.58], [215909, 42, 141, 0.3], [215909, 61, 548, 0.38], [215909, 56, 734, 0.39], [215968, 30, 500, 0.67], [216468, 30, 1116, 0.67], [216643, 61, 243, 0.5], [216643, 56, 650, 0.42], [216643, 49, 720, 0.4], [216898, 42, 1000, 0.37], [217259, 61, 255, 0.34], [217525, 61, 500, 0.41], [217573, 32, 3600, 0.76], [218036, 54, 370, 0.35], [218582, 54, 1220, 0.37], [221418, 51, 243, 0.33], [221418, 54, 266, 0.4], [221811, 68, 220, 0.57], [222334, 63, 836, 0.77], [223184, 63, 811, 0.83], [225066, 60, 220, 0.81], [225402, 61, 941, 0.73], [226507, 84, 684, 0.54], [226518, 54, 523, 0.72], [227052, 75, 407, 0.45], [227052, 56, 486, 0.34], [227052, 61, 534, 0.5], [227064, 42, 1068, 0.43], [227261, 54, 314, 0.34], [227318, 68, 511, 0.35], [227575, 73, 475, 0.44], [227586, 54, 243, 0.43], [227586, 61, 255, 0.43], [227680, 75, 336, 0.32], [227841, 80, 257, 0.36], [227841, 68, 348, 0.5], [227841, 61, 418, 0.57], [228132, 42, 186, 0.36], [228132, 72, 455, 0.53], [228143, 66, 150, 0.25], [228143, 54, 1580, 0.43], [228620, 42, 534, 0.4], [228632, 61, 523, 0.73], [228643, 68, 466, 0.47], [229143, 85, 209, 0.58], [229155, 42, 150, 0.37], [229155, 61, 418, 0.5], [229375, 87, 302, 0.57], [229386, 68, 175, 0.39], [229434, 42, 173, 0.37], [229689, 84, 1057, 0.57], [229723, 54, 675, 0.49], [229759, 42, 150, 0.38], [230234, 75, 489, 0.54], [230245, 61, 477, 0.33], [230245, 68, 825, 0.46], [230257, 42, 1048, 0.41], [230268, 56, 432, 0.42], [230584, 54, 825, 0.35], [230793, 61, 266, 0.35], [230793, 73, 266, 0.65], [231059, 73, 373, 0.51], [231059, 61, 1477, 0.5], [231070, 68, 1266, 0.47], [231420, 54, 1834, 0.6], [231432, 72, 1300, 0.44], [231489, 75, 164, 0.35], [231536, 42, 243, 0.35], [232511, 68, 384, 0.43], [233000, 82, 243, 0.57], [233280, 49, 509, 0.73], [233280, 84, 661, 0.63], [233777, 75, 395, 0.49], [233777, 56, 768, 0.68], [233789, 63, 757, 0.5], [233789, 49, 1048, 0.5], [234277, 73, 559, 0.67], [234545, 63, 280, 0.63], [234545, 56, 291, 0.69], [234557, 68, 314, 0.34], [234825, 63, 534, 0.45], [234836, 56, 509, 0.6], [234836, 49, 523, 0.66], [234836, 72, 1173, 0.47], [234941, 44, 789, 0.32], [235345, 56, 548, 0.75], [235359, 63, 625, 0.42], [235359, 49, 3845, 0.63], [235614, 68, 266, 0.31], [235880, 80, 361, 0.46], [235893, 68, 195, 0.46], [235893, 56, 3334, 0.58], [236159, 82, 652, 0.46], [236182, 37, 245, 0.4], [236182, 63, 245, 0.4], [236357, 44, 373, 0.35], [239227, 75, 511, 0.65], [239227, 56, 523, 0.54], [239795, 77, 791, 0.62], [239807, 68, 709, 0.36], [239807, 73, 709, 0.5], [239807, 54, 1511, 0.54], [240586, 77, 661, 0.63], [241318, 66, 186, 0.37], [241318, 73, 1266, 0.55], [241318, 54, 1557, 0.5], [241330, 68, 1511, 0.47], [241375, 77, 534, 0.39], [242920, 77, 511, 0.59], [242932, 65, 418, 0.47], [242932, 68, 466, 0.42], [242932, 75, 686, 0.45], [242957, 53, 1393, 0.49], [243723, 65, 511, 0.37], [243723, 77, 698, 0.62], [244432, 68, 534, 0.54], [244432, 73, 545, 0.69], [244455, 65, 1000, 0.49], [244966, 61, 545, 0.77], [244977, 73, 384, 0.32], [245257, 77, 150, 0.34], [245511, 60, 1023, 0.58], [245545, 88, 477, 0.33], [246105, 73, 1277, 0.44], [246116, 77, 814, 0.5], [246127, 51, 1486, 0.48], [246139, 54, 895, 0.39], [246161, 66, 477, 0.39], [246930, 77, 1068, 0.55], [246964, 39, 232, 0.38], [247718, 73, 1489, 0.5], [247718, 66, 1698, 0.48], [247741, 63, 595, 0.43], [247834, 39, 209, 0.41], [249484, 68, 164, 0.43], [249532, 56, 1789, 0.61], [249600, 73, 1336, 0.63], [249682, 75, 511, 0.46], [249939, 68, 986, 0.37], [250752, 75, 173, 0.31], [250936, 68, 268, 0.53], [250936, 73, 339, 0.57], [250936, 75, 384, 0.52], [251320, 75, 511, 0.39], [251320, 56, 1986, 0.59], [251507, 73, 1057, 0.44], [251600, 68, 964, 0.46], [252086, 75, 198, 0.32], [253341, 37, 9923, 0.64], [253505, 51, 2848, 0.44], [253598, 58, 6820, 0.47], [253759, 60, 9400, 0.63], [255016, 56, 452, 0.38], [255827, 56, 1907, 0.35], [255861, 63, 2000, 0.43], [258045, 63, 223, 0.31], [258559, 63, 289, 0.36], [259023, 56, 743, 0.31], [259975, 63, 432, 0.32], [260591, 63, 975, 0.35], [260882, 58, 859, 0.3], [261475, 56, 311, 0.31], [261811, 63, 1255, 0.37], [262300, 58, 255, 0.34], [263205, 40, 268, 0.33], [264111, 23, 209, 0.33]]; // [time_ms, pitch, dur_ms, vel]
     const scoreDb = [{"m": "前奏", "chord": "Dbadd9", "beat": 1, "note": "Db4", "key": "W", "lh": "Db3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "lyric": "【前奏 琴音分解】"}, {"sec": "主歌 (小節 1)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 2)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "而我卻"}, {"sec": "主歌 (小節 3)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "停留"}, {"sec": "主歌 (小節 4)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "多少等候"}, {"sec": "主歌 (小節 5)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "落空"}, {"sec": "主歌 (小節 6)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 7)", "chord": "Ebm11", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Ebm11", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Ebm11", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Eb3", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "滲透"}, {"sec": "主歌 (小節 10)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 12)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "漩渦"}, {"sec": "主歌 (小節 14)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 15)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 16)", "chord": "Ebm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Ebm7", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Ebm7", "beat": 3, "note": "Bb4", "key": "U", "lh": "Eb3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "真正失去的比想像更多"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "F", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "F/A", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "F/A", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "F/A", "beat": 3, "note": "C5", "key": "K", "lh": "Ab2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Ebm11", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Ebm11", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Ebm11", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Eb3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "Eb11", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "Eb11", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "Eb11", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Eb3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "那空洞"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Ebm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Ebm7", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Ebm7", "beat": 3, "note": "Bb4", "key": "U", "lh": "Eb3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Absus4", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Absus4", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Absus4", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 2 (小節 36)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Dbadd9", "beat": 3, "note": "Eb5", "key": "P", "lh": "Db3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 37)", "chord": "Ab/C", "beat": 1, "note": "Eb4", "key": "E", "lh": "C3", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "Ab/C", "beat": 2, "note": "Ab4", "key": "Y", "lh": "C3", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "Ab/C", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 38)", "chord": "Bbm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Bb2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Bbm7", "beat": 2, "note": "F4", "key": "F", "lh": "Bb2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Bbm7", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Bb2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Bbm/Ab", "beat": 1, "note": "Db4", "key": "W", "lh": "Ab2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Bbm/Ab", "beat": 2, "note": "F4", "key": "F", "lh": "Ab2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Bbm/Ab", "beat": 3, "note": "Bb4", "key": "U", "lh": "Ab2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 40)", "chord": "Gbsus2", "beat": 1, "note": "Db4", "key": "W", "lh": "Gb2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Gbsus2", "beat": 2, "note": "Gb4", "key": "T", "lh": "Gb2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Gbsus2", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Gb2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "Db/F", "beat": 1, "note": "Db4", "key": "W", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "Db/F", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "Db/F", "beat": 3, "note": "Ab4", "key": "Y", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Ebm7", "beat": 1, "note": "Db4", "key": "W", "lh": "Eb3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Ebm7", "beat": 2, "note": "Gb4", "key": "T", "lh": "Eb3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Ebm7", "beat": 3, "note": "Bb4", "key": "U", "lh": "Eb3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 43)", "chord": "Ab", "beat": 1, "note": "C4", "key": "A", "lh": "Ab2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "Ab", "beat": 2, "note": "Eb4", "key": "E", "lh": "Ab2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "Ab", "beat": 3, "note": "Ab4", "key": "Y", "lh": "Ab2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Dbadd9", "beat": 1, "note": "Eb4", "key": "E", "lh": "Db3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Dbadd9", "beat": 2, "note": "Ab4", "key": "Y", "lh": "Db3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Dbadd9", "beat": 3, "note": "Db5", "key": "O", "lh": "Db3", "phrase": "完結"}];
     const scoreC = [{"m": "前奏", "chord": "Cadd9", "beat": 1, "note": "C4", "key": "A", "lh": "C3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "lyric": "【前奏 琴音分解】"}, {"m": "前奏", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "lyric": "【前奏 琴音分解】"}, {"sec": "主歌 (小節 1)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 1)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "不要說 他已遠走"}, {"sec": "主歌 (小節 2)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "而我卻"}, {"sec": "主歌 (小節 2)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "而我卻"}, {"sec": "主歌 (小節 3)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "停留"}, {"sec": "主歌 (小節 3)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "停留"}, {"sec": "主歌 (小節 4)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "多少等候"}, {"sec": "主歌 (小節 4)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "多少等候"}, {"sec": "主歌 (小節 5)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "落空"}, {"sec": "主歌 (小節 5)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "落空"}, {"sec": "主歌 (小節 6)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 6)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "多少寂寞"}, {"sec": "主歌 (小節 7)", "chord": "Dm11", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Dm11", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "滲透"}, {"sec": "主歌 (小節 7)", "chord": "Dm11", "beat": 3, "note": "G4", "key": "G", "lh": "D3", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 8)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 9)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "滲透"}, {"sec": "主歌 (小節 10)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 10)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 11)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "我想走 但始終埋沒"}, {"sec": "主歌 (小節 12)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "漩渦"}, {"sec": "主歌 (小節 12)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "漩渦"}, {"sec": "主歌 (小節 13)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "漩渦"}, {"sec": "主歌 (小節 14)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 14)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "疲憊抹去自我"}, {"sec": "主歌 (小節 15)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 15)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "無奈擊潰從容"}, {"sec": "主歌 (小節 16)", "chord": "Dm7", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Dm7", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 16)", "chord": "Dm7", "beat": 3, "note": "A4", "key": "H", "lh": "D3", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 17)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "主歌 (小節 18)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "真正失去的比想像更多"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "E", "beat": 1, "note": "B3", "key": "J", "lh": "E2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 19)", "chord": "E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "黑夜失眠簇擁內心喧囂"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "E/G#", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "E/G#", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 20)", "chord": "E/G#", "beat": 3, "note": "B4", "key": "J", "lh": "G2", "phrase": "煩悶的生活"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 21)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 22)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "一天天晃過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Dm11", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Dm11", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 23)", "chord": "Dm11", "beat": 3, "note": "G4", "key": "G", "lh": "D3", "phrase": "難以越過"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "D11", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "D11", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 24)", "chord": "D11", "beat": 3, "note": "G4", "key": "G", "lh": "D3", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 25)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "那空洞"}, {"sec": "導歌 Pre-Chorus (小節 26)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "那空洞"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 27)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "我一片空白"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 28)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "停滯在灰色地帶"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 29)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 30)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "說不出內心感慨"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 31)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 32)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "步履蹣跚"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Dm7", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Dm7", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 33)", "chord": "Dm7", "beat": 3, "note": "A4", "key": "H", "lh": "D3", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Gsus4", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Gsus4", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 34)", "chord": "Gsus4", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 1 Chorus (小節 35)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "快點回來 就不哀嘆"}, {"sec": "副歌 2 (小節 36)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 36)", "chord": "Cadd9", "beat": 3, "note": "D5", "key": "L", "lh": "C3", "phrase": "又一段空拍"}, {"sec": "副歌 2 (小節 37)", "chord": "G/B", "beat": 1, "note": "D4", "key": "S", "lh": "B2", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "G/B", "beat": 2, "note": "G4", "key": "G", "lh": "B2", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 37)", "chord": "G/B", "beat": 3, "note": "B4", "key": "J", "lh": "B2", "phrase": "停止在絕望塵埃"}, {"sec": "副歌 2 (小節 38)", "chord": "Am7", "beat": 1, "note": "C4", "key": "A", "lh": "A2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Am7", "beat": 2, "note": "E4", "key": "D", "lh": "A2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 38)", "chord": "Am7", "beat": 3, "note": "G4", "key": "G", "lh": "A2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Am/G", "beat": 1, "note": "C4", "key": "A", "lh": "G2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Am/G", "beat": 2, "note": "E4", "key": "D", "lh": "G2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 39)", "chord": "Am/G", "beat": 3, "note": "A4", "key": "H", "lh": "G2", "phrase": "吹散陰霾"}, {"sec": "副歌 2 (小節 40)", "chord": "Fsus2", "beat": 1, "note": "C4", "key": "A", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Fsus2", "beat": 2, "note": "F4", "key": "F", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 40)", "chord": "Fsus2", "beat": 3, "note": "G4", "key": "G", "lh": "F2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "C/E", "beat": 1, "note": "C4", "key": "A", "lh": "E2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "C/E", "beat": 2, "note": "E4", "key": "D", "lh": "E2", "phrase": "卸下重擔"}, {"sec": "副歌 2 (小節 41)", "chord": "C/E", "beat": 3, "note": "G4", "key": "G", "lh": "E2", "phrase": "卸下重擔"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Dm7", "beat": 1, "note": "C4", "key": "A", "lh": "D3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Dm7", "beat": 2, "note": "F4", "key": "F", "lh": "D3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 42)", "chord": "Dm7", "beat": 3, "note": "A4", "key": "H", "lh": "D3", "phrase": "就算重來"}, {"sec": "尾奏 Outro (小節 43)", "chord": "G", "beat": 1, "note": "B3", "key": "J", "lh": "G2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "G", "beat": 2, "note": "D4", "key": "S", "lh": "G2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 43)", "chord": "G", "beat": 3, "note": "G4", "key": "G", "lh": "G2", "phrase": "並非失敗"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Cadd9", "beat": 1, "note": "D4", "key": "S", "lh": "C3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Cadd9", "beat": 2, "note": "G4", "key": "G", "lh": "C3", "phrase": "完結"}, {"sec": "尾奏 Outro (小節 44)", "chord": "Cadd9", "beat": 3, "note": "C5", "key": "K", "lh": "C3", "phrase": "完結"}];
 
-    const melodyDb = [
-      // === 前奏 INTRO ===
-      { sec: '前奏 Intro', word: '♫ 前奏1', note: 'Ab4 (降La)', key: 'Y', phrase: '（鋼琴原版前奏）' },
-      { sec: '前奏 Intro', word: '♫ 前奏2', note: 'Eb5 (高音降Re)', key: 'P', phrase: '（高音透明感）' },
-      { sec: '前奏 Intro', word: '♫ 前奏3', note: 'F5 (高音Fa)', key: "'", phrase: '（空靈旋律）' },
-      { sec: '前奏 Intro', word: '♫ 前奏4', note: 'Ab4 (降La)', key: 'Y', phrase: '（低音下行）' },
-      { sec: '前奏 Intro', word: '♫ 前奏5', note: 'C5 (高音Do)', key: 'K', phrase: '（空拍留白）' },
-      { sec: '前奏 Intro', word: '♫ 前奏6', note: 'F4 (Fa)', key: 'F', phrase: '（準備進歌）' },
-
-      // === 主歌 1 VERSE 1 ===
-      { sec: '主歌 1', word: '不', note: 'Eb4 (降Re)', key: 'E', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '要', note: 'F4 (Fa)', key: 'F', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '說', note: 'F4 (Fa)', key: 'F', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '他', note: 'Db4 (降Do)', key: 'W', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '已', note: 'Eb4 (降Re)', key: 'E', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '遠', note: 'F4 (Fa)', key: 'F', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '走', note: 'Ab4 (降La)', key: 'Y', phrase: '不要說 他已遠走' },
-
-      { sec: '主歌 1', word: '而', note: 'Db4 (降Do)', key: 'W', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '我', note: 'Eb4 (降Re)', key: 'E', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '卻', note: 'F4 (Fa)', key: 'F', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '停', note: 'Db4 (降Do)', key: 'W', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '留', note: 'Db4 (降Do)', key: 'W', phrase: '而我卻停留' },
-
-      { sec: '主歌 1', word: '多', note: 'Db4 (降Do)', key: 'W', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '少', note: 'Eb4 (降Re)', key: 'E', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '等', note: 'F4 (Fa)', key: 'F', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '候', note: 'Ab4 (降La)', key: 'Y', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '落', note: 'F4 (Fa)', key: 'F', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '空', note: 'Eb4 (降Re)', key: 'E', phrase: '多少等候 落空' },
-
-      { sec: '主歌 1', word: '多', note: 'Db4 (降Do)', key: 'W', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '少', note: 'Eb4 (降Re)', key: 'E', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '寂', note: 'F4 (Fa)', key: 'F', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '寞', note: 'Ab4 (降La)', key: 'Y', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '滲', note: 'F4 (Fa)', key: 'F', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '透', note: 'Eb4 (降Re)', key: 'E', phrase: '多少寂寞 滲透' },
-
-      // === 主歌 2 VERSE 2 ===
-      { sec: '主歌 2', word: '我', note: 'Eb4 (降Re)', key: 'E', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '想', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '走', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '但', note: 'Db4 (降Do)', key: 'W', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '始', note: 'Eb4 (降Re)', key: 'E', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '終', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '埋', note: 'Ab4 (降La)', key: 'Y', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '沒', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '漩', note: 'Eb4 (降Re)', key: 'E', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '渦', note: 'Db4 (降Do)', key: 'W', phrase: '我想走 但始終埋沒 漩渦' },
-
-      { sec: '主歌 2', word: '疲', note: 'Db4 (降Do)', key: 'W', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '憊', note: 'Eb4 (降Re)', key: 'E', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '抹', note: 'F4 (Fa)', key: 'F', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '去', note: 'Ab4 (降La)', key: 'Y', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '自', note: 'F4 (Fa)', key: 'F', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '我', note: 'Eb4 (降Re)', key: 'E', phrase: '疲憊抹去自我' },
-
-      { sec: '主歌 2', word: '無', note: 'Db4 (降Do)', key: 'W', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '奈', note: 'Eb4 (降Re)', key: 'E', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '擊', note: 'F4 (Fa)', key: 'F', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '潰', note: 'Ab4 (降La)', key: 'Y', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '從', note: 'Bb4 (降Si)', key: 'U', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '容', note: 'Ab4 (降La)', key: 'Y', phrase: '無奈擊潰從容' },
-
-      { sec: '主歌 2', word: '真', note: 'Ab4 (降La)', key: 'Y', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '正', note: 'F4 (Fa)', key: 'F', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '失', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '去', note: 'Db4 (降Do)', key: 'W', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '的', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '比', note: 'F4 (Fa)', key: 'F', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '想', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '像', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '更', note: 'F4 (Fa)', key: 'F', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '多', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
-
-      // === 導歌 PRE-CHORUS ===
-      { sec: '導歌 Pre-Chorus', word: '黑', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '夜', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '失', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '眠', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '簇', note: 'A4 (La)', key: 'H', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '擁', note: 'A4 (La)', key: 'H', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '內', note: 'Bb4 (降Si)', key: 'U', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '心', note: 'Bb4 (降Si)', key: 'U', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '喧', note: 'Ab4 (降La)', key: 'Y', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '囂', note: 'F4 (Fa)', key: 'F', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '煩', note: 'Eb4 (降Re)', key: 'E', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '悶', note: 'Db4 (降Do)', key: 'W', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '的', note: 'Eb4 (降Re)', key: 'E', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '生', note: 'F4 (Fa)', key: 'F', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '活', note: 'Eb4 (降Re)', key: 'E', phrase: '煩悶的生活' },
-
-      { sec: '導歌 Pre-Chorus', word: '一', note: 'F4 (Fa)', key: 'F', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '天', note: 'Ab4 (降La)', key: 'Y', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '天', note: 'F4 (Fa)', key: 'F', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '晃', note: 'Eb4 (降Re)', key: 'E', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '過', note: 'Db4 (降Do)', key: 'W', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '難', note: 'Db4 (降Do)', key: 'W', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '以', note: 'Eb4 (降Re)', key: 'E', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '越', note: 'G4 (Sol)', key: 'G', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '過', note: 'Ab4 (降La)', key: 'Y', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '那', note: 'Bb4 (降Si)', key: 'U', phrase: '那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '空', note: 'Ab4 (降La)', key: 'Y', phrase: '那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '洞', note: 'Ab4 (降La)', key: 'Y', phrase: '那空洞' },
-
-      // === 副歌 1 CHORUS 1 ===
-      { sec: '副歌 1', word: '我', note: 'Db5 (高音降Do)', key: 'O', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '一', note: 'Db5 (高音降Do)', key: 'O', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '片', note: 'Ab4 (降La)', key: 'Y', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '空', note: 'Ab4 (降La)', key: 'Y', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '白', note: 'Ab4 (降La)', key: 'Y', phrase: '我一片空白' },
-
-      { sec: '副歌 1', word: '停', note: 'Db5 (高音降Do)', key: 'O', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '滯', note: 'Eb5 (高音降Re)', key: 'P', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '在', note: 'F5 (高音Fa)', key: "'", phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '灰', note: 'Db5 (高音降Do)', key: 'O', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '色', note: 'Db5 (高音降Do)', key: 'O', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '地', note: 'Bb4 (降Si)', key: 'U', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '帶', note: 'Bb4 (降Si)', key: 'U', phrase: '停滯在灰色地帶' },
-
-      { sec: '副歌 1', word: '說', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '不', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '出', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '內', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '心', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '感', note: 'Db5 (高音降Do)', key: 'O', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '慨', note: 'Db5 (高音降Do)', key: 'O', phrase: '說不出內心感慨' },
-
-      { sec: '副歌 1', word: '步', note: 'Bb4 (降Si)', key: 'U', phrase: '步履蹣跚' },
-      { sec: '副歌 1', word: '履', note: 'Bb4 (降Si)', key: 'U', phrase: '步履蹣跚' },
-      { sec: '副歌 1', word: '蹣', note: 'Eb5 (高音降Re)', key: 'P', phrase: '步履蹣跚' },
-      { sec: '副歌 1', word: '跚', note: 'Db5 (高音降Do)', key: 'O', phrase: '步履蹣跚' },
-
-      { sec: '副歌 1', word: '快', note: 'Db5 (高音降Do)', key: 'O', phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '點', note: 'Eb5 (高音降Re)', key: 'P', phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '回', note: 'F5 (高音Fa)', key: "'", phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '來', note: 'Db5 (高音降Do)', key: 'O', phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '就', note: 'Eb5 (高音降Re)', key: 'P', phrase: '就不哀嘆' },
-      { sec: '副歌 1', word: '不', note: 'Eb5 (高音降Re)', key: 'P', phrase: '就不哀嘆' },
-      { sec: '副歌 1', word: '哀', note: 'Db5 (高音降Do)', key: 'O', phrase: '就不哀嘆' },
-      { sec: '副歌 1', word: '嘆', note: 'Db5 (高音降Do)', key: 'O', phrase: '就不哀嘆' },
-
-      // === 副歌 2 CHORUS 2 ===
-      { sec: '副歌 2', word: '又', note: 'Db5 (高音降Do)', key: 'O', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '一', note: 'Db5 (高音降Do)', key: 'O', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '段', note: 'Ab4 (降La)', key: 'Y', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '空', note: 'Ab4 (降La)', key: 'Y', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '拍', note: 'Ab4 (降La)', key: 'Y', phrase: '又一段空拍' },
-
-      { sec: '副歌 2', word: '停', note: 'Db5 (高音降Do)', key: 'O', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '止', note: 'Eb5 (高音降Re)', key: 'P', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '在', note: 'F5 (高音Fa)', key: "'", phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '絕', note: 'Db5 (高音降Do)', key: 'O', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '望', note: 'Db5 (高音降Do)', key: 'O', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '塵', note: 'Bb4 (降Si)', key: 'U', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '埃', note: 'Bb4 (降Si)', key: 'U', phrase: '停止在絕望塵埃' },
-
-      { sec: '副歌 2', word: '吹', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
-      { sec: '副歌 2', word: '散', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
-      { sec: '副歌 2', word: '陰', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
-      { sec: '副歌 2', word: '霾', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
-
-      { sec: '副歌 2', word: '卸', note: 'F5 (高音Fa)', key: "'", phrase: '卸下重擔' },
-      { sec: '副歌 2', word: '下', note: 'Eb5 (高音降Re)', key: 'P', phrase: '卸下重擔' },
-      { sec: '副歌 2', word: '重', note: 'Db5 (高音降Do)', key: 'O', phrase: '卸下重擔' },
-      { sec: '副歌 2', word: '擔', note: 'Db5 (高音降Do)', key: 'O', phrase: '卸下重擔' },
-
-      { sec: '尾奏 Outro', word: '就', note: 'Db5 (高音降Do)', key: 'O', phrase: '就算重來 並非失敗' },
-      { sec: '尾奏 Outro', word: '算', note: 'Eb5 (高音降Re)', key: 'P', phrase: '就算重來 並非失敗' },
-      { sec: '尾奏 Outro', word: '重', note: 'F5 (高音Fa)', key: "'", phrase: '就算重來 並非失敗' },
-      { sec: '尾奏 Outro', word: '來', note: 'Ab4 (降La)', key: 'Y', phrase: '就算重來 並非失敗' },
-
-      { sec: '尾奏 Outro', word: '並', note: 'F4 (Fa)', key: 'F', phrase: '並非失敗' },
-      { sec: '尾奏 Outro', word: '非', note: 'Eb4 (降Re)', key: 'E', phrase: '並非失敗' },
-      { sec: '尾奏 Outro', word: '失', note: 'Db4 (降Do)', key: 'W', phrase: '並非失敗' },
-      { sec: '尾奏 Outro', word: '敗', note: 'Db4 (降Do)', key: 'W', phrase: '（留白完結）' },
-    ];
-    const melodyC = melodyDb.map(item => {
-      const shiftMap = {
-        'W': 'A', 'E': 'S', 'F': 'D', 'T': 'F', 'Y': 'G', 'U': 'H', 'K': 'J',
-        'O': 'K', 'P': 'L', "'": ';'
-      };
-      const noteMap = {
-        'Db4 (降Do)': 'C4 (Do)', 'Eb4 (降Re)': 'D4 (Re)', 'F4 (Fa)': 'E4 (Mi)',
-        'Gb4 (降Sol)': 'F4 (Fa)', 'Ab4 (降La)': 'G4 (Sol)', 'A4 (La)': 'G#4 (升Sol)',
-        'Bb4 (降Si)': 'A4 (La)', 'C5 (高音Do)': 'B4 (Si)',
-        'Db5 (高音降Do)': 'C5 (高音Do)', 'Eb5 (高音降Re)': 'D5 (高音Re)', 'F5 (高音Fa)': 'E5 (高音Mi)'
-      };
-      return {
-        sec: item.sec,
-        word: item.word,
-        note: noteMap[item.note] || item.note,
-        key: shiftMap[item.key] || item.key,
-        phrase: item.phrase
-      };
-    });
-
-    let currentMode = 'score'; // 'score' | 'melody'
-    let currentKey = 'db';    // 'db' | 'c'
+    let currentLearningMode = 'both'; // 'both' | 'lh' | 'rh'
+    let currentKey = 'db';           // 'db' | 'c'
     let noteIdx = 0;
     let combo = 0;
     let demoActive = false;
     let demoTimers = [];
 
     function getActiveDataset() {
-      if (currentMode === 'score') {
-        return currentKey === 'db' ? scoreDb : scoreC;
-      } else {
-        return currentKey === 'db' ? melodyDb : melodyC;
-      }
+      return currentKey === 'db' ? scoreDb : scoreC;
     }
 
     function setupSectionNav() {
@@ -1123,65 +1048,76 @@
       if (noteIdx >= ds.length) noteIdx = 0;
       const item = ds[noteIdx];
 
+      // 進度條
       const pct = Math.round((noteIdx / (ds.length - 1)) * 100);
       document.getElementById('progressBar').style.width = `${pct}%`;
       document.getElementById('lblProgressPct').textContent = `${pct}%`;
       document.getElementById('lblSectionProgress').textContent = `段落：${item.sec || ''} (${noteIdx + 1}/${ds.length})`;
 
-      if (currentMode === 'score') {
-        document.getElementById('lblMeasure').textContent = `${item.sec} · 五線譜對應`;
-        document.getElementById('lblPhraseLine').textContent = `歌詞對照：「${item.phrase}」`;
-        document.getElementById('lblChordTitle').textContent = item.chord;
-        document.getElementById('lblNoteInfo').textContent = `音符：${item.note} (第 ${item.beat} 拍)`;
+      // 歌詞對照
+      document.getElementById('lblPhraseLine').innerHTML = `歌詞對照：「<span class="active-phrase">${item.phrase || item.lyric || ''}</span>」`;
 
-        if (item.beat === 1) {
-          document.getElementById('lblLhBass').style.display = 'inline-flex';
-          document.getElementById('lblLhBass').textContent = `左手低音：${item.lh} (踏板延音共鳴 4 秒)`;
-          document.getElementById('lblBreatheHint').textContent = '🌿 五線譜踏板踩下：低音持續 4 秒共振';
-        } else {
-          document.getElementById('lblLhBass').style.display = 'inline-flex';
-          document.getElementById('lblLhBass').textContent = `右手分解琶音`;
-          document.getElementById('lblBreatheHint').textContent = '✨ 照五線譜琶音流動';
-        }
+      // 拍子與和弦
+      document.getElementById('lblBeatNum').textContent = item.beat;
+      document.getElementById('lblChordPill').textContent = item.chord;
 
-        if (noteIdx < ds.length - 1) {
-          const next = ds[noteIdx + 1];
-          document.getElementById('lblNextPreview').textContent = `下一個音：${next.note} (按鍵 ${next.key})`;
-        } else {
-          document.getElementById('lblNextPreview').textContent = '全曲伴奏演奏完成！🎉';
-        }
-      } else {
-        document.getElementById('lblMeasure').textContent = item.sec;
-        document.getElementById('lblPhraseLine').textContent = item.phrase;
-        document.getElementById('lblChordTitle').textContent = item.word;
-        document.getElementById('lblNoteInfo').textContent = item.note;
-        document.getElementById('lblLhBass').style.display = 'none';
-        document.getElementById('lblBreatheHint').textContent = '🎤 歌手逐字唱腔旋律';
+      // 左手框 (LH)
+      const isLhStrike = (item.beat === 1);
+      document.getElementById('lblLhNote').textContent = item.lh;
+      document.getElementById('lblLhDesc').textContent = isLhStrike
+        ? '沉穩根音 (雙手齊奏 · 踏板延留 4 秒)'
+        : '踏板持續共振中...';
 
-        if (noteIdx < ds.length - 1) {
-          const next = ds[noteIdx + 1];
-          document.getElementById('lblNextPreview').textContent = `下一個字：${next.word} (${next.note.split(' ')[0]} / ${next.key})`;
-        } else {
-          document.getElementById('lblNextPreview').textContent = '全曲結束！🎉';
-        }
-      }
+      // 右手框 (RH)
+      document.getElementById('lblRhNote').textContent = `${item.note} (按鍵 ${item.key})`;
+      document.getElementById('lblRhDesc').textContent = (item.beat === 1)
+        ? '琶音第 1 拍 (與左手合奏)'
+        : (item.beat === 2 ? '琶音第 2 拍 (中音流動)' : '琶音第 3 拍 (高音點綴 · 空拍呼吸)');
 
+      // 單鍵提示
       document.getElementById('keyBadge').textContent = item.key;
       document.getElementById('comboCount').textContent = combo;
 
+      if (noteIdx < ds.length - 1) {
+        const next = ds[noteIdx + 1];
+        document.getElementById('lblNextPreview').textContent = `下一個音：${next.note} (按鍵 ${next.key})`;
+      } else {
+        document.getElementById('lblNextPreview').textContent = '全曲伴奏演奏完成！🎉';
+      }
+
+      // 49 鍵全鋼琴指引高亮 (左手粉紅，右手天藍)
       if (!demoActive) {
-        document.querySelectorAll('.white-key, .black-key').forEach(el => el.classList.remove('guided'));
-        const targetEl = document.getElementById(`key-${item.key}`);
-        if (targetEl) targetEl.classList.add('guided');
+        document.querySelectorAll('.white-key-49, .black-key-49').forEach(el => {
+          el.classList.remove('lh-guided', 'rh-guided', 'lh-strike', 'rh-strike');
+        });
+
+        // 左手指引 (桃紅色)
+        if (item.lh) {
+          const lhEl = document.getElementById(`key-49-${item.lh}`);
+          if (lhEl) lhEl.classList.add('lh-guided');
+        }
+
+        // 右手指引 (天藍色)
+        if (item.note) {
+          const rhEl = document.getElementById(`key-49-${item.note}`);
+          if (rhEl) rhEl.classList.add('rh-guided');
+        }
       }
     }
 
     function advanceNote() {
       const ds = getActiveDataset();
       combo++;
-      const stage = document.getElementById('stageBlock');
-      stage.classList.add('success-flash');
-      setTimeout(() => stage.classList.remove('success-flash'), 180);
+
+      // 雙手方塊動畫
+      const boxLH = document.getElementById('boxLH');
+      const boxRH = document.getElementById('boxRH');
+      boxLH.classList.add('active-strike');
+      boxRH.classList.add('active-strike');
+      setTimeout(() => {
+        boxLH.classList.remove('active-strike');
+        boxRH.classList.remove('active-strike');
+      }, 200);
 
       if (noteIdx < ds.length - 1) {
         noteIdx++;
@@ -1195,56 +1131,78 @@
       stopDemo();
       const ds = getActiveDataset();
       const target = ds[noteIdx];
-      const k = keyMap[char];
-      if (!k) return;
 
-      const el = document.getElementById(`key-${k.key}`);
-      if (el) {
-        el.classList.add('active');
-        setTimeout(() => el.classList.remove('active'), 180);
-      }
+      // 檢查是否匹配目標鍵
+      if (char !== target.key) return;
 
-      if (currentMode === 'score') {
-        if (target.beat === 1 && target.lh) {
-          const bassFreq = bassFreqMap[target.lh] || 130.81;
-          playPianoTone(target.lh, bassFreq, true, 4.2, 0.78);
+      // 執行發聲與 49 鍵琴鍵擊發動畫
+      const targetNote = target.note;
+      const lhNote = target.lh;
+
+      // 1. 左手低音 (第一拍發聲，延音 4 秒)
+      if (target.beat === 1 && lhNote) {
+        const bassFreq = bassFreqMap[lhNote] || 130.81;
+        playPianoTone(lhNote, bassFreq, true, 4.2, 0.78);
+
+        const lhEl = document.getElementById(`key-49-${lhNote}`);
+        if (lhEl) {
+          lhEl.classList.add('lh-strike');
+          setTimeout(() => lhEl.classList.remove('lh-strike'), 350);
         }
-        const vel = target.beat === 1 ? 0.68 : (target.beat === 2 ? 0.48 : 0.58);
-        playPianoTone(target.note, k.freq, false, 2.8, vel);
-      } else {
-        playPianoTone(target.note ? target.note.split(' ')[0] : 'C4', k.freq, false, 2.2, 0.65);
       }
 
-      if (char === target.key) {
-        advanceNote();
+      // 2. 右手琴音
+      const rhEl = document.getElementById(`key-49-${targetNote}`);
+      if (rhEl) {
+        rhEl.classList.add('rh-strike');
+        setTimeout(() => rhEl.classList.remove('rh-strike'), 250);
       }
+      const rhFreq = 440 * Math.pow(2, ((keysDefMap[targetNote] || 60) - 69) / 12);
+      playPianoTone(targetNote, rhFreq, false, 2.8, target.beat === 1 ? 0.68 : 0.52);
+
+      advanceNote();
     }
+
+    // MIDI 映射備查
+    const keysDefMap = {};
+    allKeys49.forEach(k => keysDefMap[k.note] = k.pitch);
 
     window.addEventListener('keydown', (e) => {
       const char = e.key.toUpperCase();
-      if (keyMap[char]) pressKey(char);
+      if (macbookKeysMap[char]) {
+        pressKey(char);
+      }
     });
 
-    document.getElementById('btnModeScore').addEventListener('click', function() {
+    // 學習模式切換
+    document.getElementById('btnModeBoth').addEventListener('click', function() {
       stopDemo();
-      currentMode = 'score';
+      currentLearningMode = 'both';
+      document.querySelectorAll('.controls-top .btn-group:first-child .pill-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
-      document.getElementById('btnModeMelody').classList.remove('active');
-      setupSectionNav();
-      noteIdx = 0;
+      document.getElementById('lblKeyHintSub').textContent = '敲擊時，左手低音與右手琶音將在下方完整鋼琴上同時亮起！';
       updateUI();
     });
 
-    document.getElementById('btnModeMelody').addEventListener('click', function() {
+    document.getElementById('btnModeLH').addEventListener('click', function() {
       stopDemo();
-      currentMode = 'melody';
+      currentLearningMode = 'lh';
+      document.querySelectorAll('.controls-top .btn-group:first-child .pill-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
-      document.getElementById('btnModeScore').classList.remove('active');
-      setupSectionNav();
-      noteIdx = 0;
+      document.getElementById('lblKeyHintSub').textContent = '【只練左手低音】：專注觀察 𝄢 低音譜表上的根音走向！';
       updateUI();
     });
 
+    document.getElementById('btnModeRH').addEventListener('click', function() {
+      stopDemo();
+      currentLearningMode = 'rh';
+      document.querySelectorAll('.controls-top .btn-group:first-child .pill-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('lblKeyHintSub').textContent = '【只練右手琶音】：專注觀察 𝄞 高音譜表上的流動音符！';
+      updateUI();
+    });
+
+    // 調性切換
     document.getElementById('btnKeyDb').addEventListener('click', function() {
       stopDemo();
       currentKey = 'db';
@@ -1264,7 +1222,7 @@
     });
 
     // -------------------------------------------------------------
-    // 4. 五線譜全曲演奏示範 (1,445 音符真實播放與琴鍵視覺連動)
+    // 4. 五線譜雙手示範演奏 (49 鍵全鋼琴 Synthesia 風格雙手視覺化)
     // -------------------------------------------------------------
     const btnDemo = document.getElementById('btnScoreDemo');
 
@@ -1273,10 +1231,12 @@
       demoActive = false;
       demoTimers.forEach(t => clearTimeout(t));
       demoTimers = [];
-      btnDemo.textContent = '▶️ 五線譜全曲演奏示範';
+      btnDemo.textContent = '▶️ 五線譜雙手演奏示範';
       btnDemo.classList.remove('pill-btn', 'active-demo');
       btnDemo.classList.add('pill-btn', 'active-demo');
-      document.querySelectorAll('.white-key, .black-key').forEach(el => el.classList.remove('demo-active'));
+      document.querySelectorAll('.white-key-49, .black-key-49').forEach(el => {
+        el.classList.remove('lh-strike', 'rh-strike');
+      });
       updateUI();
     }
 
@@ -1286,40 +1246,39 @@
       demoActive = true;
       btnDemo.textContent = '⏹️ 停止示範演奏';
 
-      // 快速提示
-      document.getElementById('lblMeasure').textContent = '五線譜全曲演奏示範中 🎶';
-      document.getElementById('lblChordTitle').textContent = '呂允《空拍》伴奏鋼琴譜';
-      document.getElementById('lblBreatheHint').textContent = '🌿 正在演奏五線譜上的 1,445 個音符與真實踩踏板共鳴...';
-
       const totalDuration = fullDemoNotes[fullDemoNotes.length - 1][0] + 3000;
       const startTime = Date.now();
 
-      // 排程每一個音符發聲與鍵盤發亮
+      // 排程 1,445 個音符，左手桃紅 (pitch < 57)、右手天藍 (pitch >= 57)
       fullDemoNotes.forEach(item => {
         const [timeMs, pitch, durMs, vel] = item;
         const noteName = midiPitchToName(pitch);
         const freq = midiPitchToFreq(pitch);
+        const isLeftHand = (pitch < 57); // 低於 A3 歸為左手伴奏聲部
 
         const timerId = setTimeout(() => {
           if (!demoActive) return;
 
           // 發聲
-          playPianoTone(noteName, freq, pitch < 55, durMs / 1000.0, vel);
+          playPianoTone(noteName, freq, isLeftHand, durMs / 1000.0, vel);
 
-          // 琴鍵高亮
-          const kDef = pitchMap[pitch];
-          if (kDef) {
-            const keyEl = document.getElementById(`key-${kDef.key}`);
-            if (keyEl) {
-              keyEl.classList.add('demo-active');
-              setTimeout(() => keyEl.classList.remove('demo-active'), Math.min(durMs, 600));
-            }
+          // 49 鍵鋼琴雙手高亮
+          const keyEl = document.getElementById(`key-49-${noteName}`);
+          if (keyEl) {
+            const strikeClass = isLeftHand ? 'lh-strike' : 'rh-strike';
+            keyEl.classList.add(strikeClass);
+            setTimeout(() => keyEl.classList.remove(strikeClass), Math.min(durMs, 500));
           }
 
-          // 更新舞台提示
-          document.getElementById('lblNoteInfo').textContent = `正在演奏：${noteName} (力度 ${Math.round(vel * 100)}%)`;
-          if (kDef) {
-            document.getElementById('keyBadge').textContent = kDef.key;
+          // 雙手方塊動畫
+          if (isLeftHand) {
+            document.getElementById('lblLhNote').textContent = noteName;
+            document.getElementById('boxLH').classList.add('active-strike');
+            setTimeout(() => document.getElementById('boxLH').classList.remove('active-strike'), 250);
+          } else {
+            document.getElementById('lblRhNote').textContent = noteName;
+            document.getElementById('boxRH').classList.add('active-strike');
+            setTimeout(() => document.getElementById('boxRH').classList.remove('active-strike'), 250);
           }
 
           // 更新全曲進度條
@@ -1331,13 +1290,12 @@
           const sec = Math.floor(elapsed / 1000);
           const mins = Math.floor(sec / 60);
           const s = sec % 60;
-          document.getElementById('lblSectionProgress').textContent = `五線譜示範：${mins}:${s < 10 ? '0' : ''}${s} / 4:24`;
+          document.getElementById('lblSectionProgress').textContent = `雙手五線譜示範：${mins}:${s < 10 ? '0' : ''}${s} / 4:24`;
         }, timeMs);
 
         demoTimers.push(timerId);
       });
 
-      // 結尾計時
       const endTimer = setTimeout(() => {
         stopDemo();
       }, totalDuration);
@@ -1372,7 +1330,6 @@
       updateUI();
     });
 
-    // 初始化音訊與段落
     window.addEventListener('click', initAudio, { once: true });
     window.addEventListener('keydown', initAudio, { once: true });
     setupSectionNav();
