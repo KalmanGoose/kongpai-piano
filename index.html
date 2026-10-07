@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>空拍 (Pause ll) - 呂允官方完整彈唱互動教練</title>
+  <title>空拍 (Pause ll) - 呂允鋼琴全曲演奏與彈唱練習器</title>
   <style>
     :root {
       --bg: #0b0d11;
@@ -102,7 +102,7 @@
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, var(--primary), var(--accent));
-      transition: width 0.25s ease;
+      transition: width 0.15s ease;
     }
 
     .sections-nav {
@@ -193,115 +193,93 @@
     /* 主畫面舞台 */
     .song-stage {
       text-align: center;
-      padding: 20px 16px;
+      padding: 24px 16px;
       background: var(--card-inner);
       border-radius: 14px;
       position: relative;
-      transition: background 0.2s;
+      transition: background 0.15s;
     }
 
     .song-stage.success-flash {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.25);
     }
 
-    .section-tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
+    .phrase-context {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
     }
 
-    .chord-big {
-      font-size: 56px;
+    .phrase-context .highlight-char {
+      color: #fff;
+      font-weight: 800;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 2px;
+    }
+
+    .target-box {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .current-word {
+      font-size: 64px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+      line-height: 1;
+    }
+
+    .current-note {
+      font-size: 38px;
       font-weight: 900;
       color: var(--accent);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      letter-spacing: 0.5px;
-      text-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
-      margin-bottom: 4px;
-      line-height: 1.1;
+      text-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
     }
 
-    .lyric-big {
-      font-size: 26px;
-      font-weight: 600;
-      color: #ffffff;
-      min-height: 38px;
+    .chord-tag {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.15);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .prompt-box {
-      font-size: 15px;
+      font-size: 16px;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .key-badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #272c38;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      font-weight: 800;
-      font-size: 14px;
-      padding: 5px 12px;
-      border-radius: 8px;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.5);
-      font-family: ui-monospace, monospace;
-      transition: all 0.1s;
-    }
-
-    .key-badge.target {
       background: var(--accent);
       color: #0f172a;
-      border-color: #fde68a;
-      transform: scale(1.08);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+      font-weight: 900;
+      font-size: 20px;
+      padding: 6px 16px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      font-family: ui-monospace, monospace;
+      animation: pulse 1s infinite alternate;
     }
 
-    /* 3/4 拍圓舞曲燈號 */
-    .beats-meter {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 14px;
-    }
-
-    .beat-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .beat-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      transition: all 0.1s;
-    }
-
-    .beat-dot.active {
-      background: var(--primary);
-      transform: scale(1.4);
-      box-shadow: 0 0 12px var(--primary);
-    }
-
-    .beat-item span {
-      font-size: 11px;
-      color: var(--text-muted);
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
     }
 
     /* 鋼琴鍵盤容器 */
@@ -351,7 +329,7 @@
     .white-key.guided {
       background: var(--guided-white) !important;
       border-color: #f59e0b;
-      box-shadow: inset 0 -10px 0 var(--guided-black);
+      box-shadow: inset 0 -12px 0 var(--guided-black);
     }
 
     .black-keys {
@@ -395,7 +373,7 @@
 
     .black-key.guided {
       background: var(--guided-black) !important;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.8);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.9);
     }
 
     .kb-badge {
@@ -424,26 +402,17 @@
       color: #cbd5e1;
     }
 
-    /* 新手教學小指南卡片 */
-    .tutorial-card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 16px 20px;
-      border: 1px solid rgba(255,255,255,0.08);
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--text-muted);
-    }
-
-    .tutorial-card strong {
-      color: #fff;
-    }
-
+    /* 控制動作列 */
     .control-actions {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
       flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     button.btn-ctrl {
@@ -477,17 +446,17 @@
 
   <header>
     <h1>
-      <span>呂允《空拍 (Pause ll)》全曲彈唱互動練習器</span>
-      <span class="badge-official">2019 IG 官方和弦</span>
+      <span>呂允《空拍 (Pause ll)》真實琴譜全曲彈奏器</span>
+      <span class="badge-official">真正主旋律單音版</span>
     </h1>
-    <p>敲擊 MacBook 鍵盤即可發出真實鋼琴聲！按對和弦自動推進整首歌</p>
+    <p>敲擊鍵盤彈奏《空拍》真實旋律與音符！每敲一個音自動跳下一個音符</p>
   </header>
 
   <div class="main-layout">
-    <!-- 歌曲結構段落進度 -->
+    <!-- 歌曲進度條 -->
     <div class="progress-bar-container">
       <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted);">
-        <span id="lblSectionProgress">進度：前奏 (Intro)</span>
+        <span id="lblSectionProgress">進度：前奏</span>
         <span id="lblProgressPct">0%</span>
       </div>
       <div class="progress-track">
@@ -500,9 +469,9 @@
     <div class="stage-card">
       <div class="stage-top">
         <div class="mode-pills">
-          <button class="mode-pill active" id="btnModeAutoAdvance" title="按對琴鍵就自動跳下一個和弦">🎯 按對自動前進模式</button>
-          <button class="mode-pill" id="btnModeOneKey" title="新手福音：敲 1 個鍵就自動彈出超美 3/4 拍和弦">⚡ 新手單鍵伴奏模式</button>
-          <button class="mode-pill" id="btnModeAutoDemo" title="電腦自動幫你彈，聽旋律跟著唱">▶ 自動伴奏演示</button>
+          <button class="mode-pill active" id="btnModeMelody">🎹 真實旋律演奏模式（彈歌詞音符）</button>
+          <button class="mode-pill" id="btnModeChord">🎸 彈唱和弦模式（伴奏打底）</button>
+          <button class="mode-pill" id="btnModeAutoDemo">▶ 全曲旋律自動演奏</button>
         </div>
 
         <div class="combo-badge" id="comboBadge">
@@ -512,28 +481,17 @@
       </div>
 
       <div class="song-stage" id="stageBox">
-        <div class="section-tag" id="lblTag">INTRO / 前奏</div>
-        <div class="chord-big" id="lblChord">Cadd9</div>
-        <div class="lyric-big" id="lblLyric">（鋼琴留白前奏...）</div>
-        <div class="prompt-box" id="promptBox">
-          MacBook 鍵盤請敲：
-          <span class="key-badge target" id="keyBadgePrimary">A</span>
-          <span id="secondaryKeys">或同時按 D + G + L</span>
+        <div class="phrase-context" id="lblPhrase">歌詞句：不要說 他已遠走</div>
+        <div class="target-box">
+          <div class="current-word" id="lblWord">不</div>
+          <div class="current-note" id="lblNote">D4 (Re)</div>
         </div>
-
-        <div class="beats-meter">
-          <div class="beat-item">
-            <div class="beat-dot active" id="dot1"></div>
-            <span>第 1 拍 (根音重音)</span>
-          </div>
-          <div class="beat-item">
-            <div class="beat-dot" id="dot2"></div>
-            <span>第 2 拍 (輕音)</span>
-          </div>
-          <div class="beat-item">
-            <div class="beat-dot" id="dot3"></div>
-            <span>第 3 拍 (空拍留白)</span>
-          </div>
+        <div>
+          <span class="chord-tag" id="lblChord">伴奏和弦：Cadd9</span>
+        </div>
+        <div class="prompt-box">
+          MacBook Air 鍵盤請敲：
+          <span class="key-badge" id="keyBadge">S</span>
         </div>
       </div>
     </div>
@@ -546,16 +504,15 @@
       </div>
     </div>
 
-    <!-- 新手功能列與引導 -->
-    <div class="tutorial-card">
-      <strong>💡 新手遊玩指南：</strong><br>
-      1. <strong>最爽的彈唱方式（新手單鍵模式 ⚡）</strong>：直接打開上方「新手單鍵伴奏模式」，你只要敲擊螢幕提示的<strong>那 1 個字母</strong>（例如敲 `A`），程式就會自動幫你彈出呂允原版優美的 3/4 拍分解和弦，並自動跳到下一句歌詞！你可以直接開口唱完一整首！<br>
-      2. <strong>真實練琴方式（按對自動前進 🎯）</strong>：手放在 MacBook 鍵盤上，敲中發黃光的琴鍵，系統判定正確後會閃綠光並自動前進！
-      <div class="control-actions">
-        <button class="btn-ctrl" id="btnPrev">◀ 上一個和弦</button>
-        <button class="btn-ctrl" id="btnNext">下一個和弦 ▶</button>
-        <button class="btn-ctrl" id="btnResetSong">🔄 從頭開始整首</button>
-        <button class="btn-ctrl" id="btnToggleSound">🔊 鋼琴音量：正常</button>
+    <!-- 控制功能列 -->
+    <div class="control-actions">
+      <div style="display:flex; gap:8px;">
+        <button class="btn-ctrl" id="btnPrev">◀ 上一個音</button>
+        <button class="btn-ctrl" id="btnNext">下一個音 ▶</button>
+        <button class="btn-ctrl" id="btnReset">🔄 從頭彈奏</button>
+      </div>
+      <div style="font-size:13px; color:var(--text-muted);">
+        💡 提示：手指放在鍵盤上敲對提示鍵，系統會自動彈出真實旋律並無縫切換到下一個字！
       </div>
     </div>
   </div>
@@ -565,15 +522,13 @@
     // 1. 純淨平台鋼琴合成器 (Web Audio API)
     // -------------------------------------------------------------
     let audioCtx = null;
-    let isMuted = false;
 
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    function playPianoNote(freq, delay = 0, duration = 2.4, gainLevel = 0.35) {
-      if (isMuted) return;
+    function playPianoNote(freq, delay = 0, duration = 2.2, gainLevel = 0.38) {
       initAudio();
       const now = audioCtx.currentTime + delay;
       const osc1 = audioCtx.createOscillator();
@@ -587,7 +542,7 @@
 
       gain.gain.setValueAtTime(0.001, now);
       gain.gain.exponentialRampToValueAtTime(gainLevel, now + 0.015);
-      gain.gain.exponentialRampToValueAtTime(gainLevel * 0.4, now + 0.2);
+      gain.gain.exponentialRampToValueAtTime(gainLevel * 0.45, now + 0.18);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
       osc1.connect(gain);
@@ -600,40 +555,45 @@
       osc2.stop(now + duration + 0.1);
     }
 
-    // 彈奏完整 3/4 拍立體琶音
-    function playChordArpeggio(notesFreqs) {
-      if (!notesFreqs || notesFreqs.length === 0) return;
-      // 第 1 拍：低音深沉
-      playPianoNote(notesFreqs[0], 0, 2.5, 0.45);
-      // 第 2 拍：中音點綴 (~300ms)
-      if (notesFreqs.length > 1) playPianoNote(notesFreqs[1], 0.28, 2.2, 0.3);
-      // 第 3 拍：高音空靈 (~600ms)
-      if (notesFreqs.length > 2) playPianoNote(notesFreqs[2], 0.58, 2.0, 0.35);
-      if (notesFreqs.length > 3) playPianoNote(notesFreqs[3], 0.88, 1.8, 0.25);
+    // 同步輕柔伴奏底音
+    function playBassNote(freq) {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq / 2, now); // 低一個八度
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.2, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 2.1);
     }
 
     // -------------------------------------------------------------
-    // 2. 鍵盤映射 (MacBook Air 鍵盤)
+    // 2. MacBook 鍵盤映射 (白鍵 A S D F G H J K L ; / 黑鍵 W E T Y U O P)
     // -------------------------------------------------------------
     const keysDef = [
-      { note: 'C4', key: 'A', isBlack: false, freq: 261.63 },
-      { note: 'C#4', key: 'W', isBlack: true, freq: 277.18 },
-      { note: 'D4', key: 'S', isBlack: false, freq: 293.66 },
-      { note: 'D#4', key: 'E', isBlack: true, freq: 311.13 },
-      { note: 'E4', key: 'D', isBlack: false, freq: 329.63 },
-      { note: 'F4', key: 'F', isBlack: false, freq: 349.23 },
-      { note: 'F#4', key: 'T', isBlack: true, freq: 369.99 },
-      { note: 'G4', key: 'G', isBlack: false, freq: 392.00 },
-      { note: 'G#4', key: 'Y', isBlack: true, freq: 415.30 },
-      { note: 'A4', key: 'H', isBlack: false, freq: 440.00 },
-      { note: 'A#4', key: 'U', isBlack: true, freq: 466.16 },
-      { note: 'B4', key: 'J', isBlack: false, freq: 493.88 },
-      { note: 'C5', key: 'K', isBlack: false, freq: 523.25 },
-      { note: 'C#5', key: 'O', isBlack: true, freq: 554.37 },
-      { note: 'D5', key: 'L', isBlack: false, freq: 587.33 },
-      { note: 'D#5', key: 'P', isBlack: true, freq: 622.25 },
-      { note: 'E5', key: ';', isBlack: false, freq: 659.25 },
-      { note: 'F5', key: "'", isBlack: false, freq: 698.46 },
+      { note: 'C4', key: 'A', isBlack: false, freq: 261.63, solfege: 'Do' },
+      { note: 'C#4', key: 'W', isBlack: true, freq: 277.18, solfege: '升Do' },
+      { note: 'D4', key: 'S', isBlack: false, freq: 293.66, solfege: 'Re' },
+      { note: 'D#4', key: 'E', isBlack: true, freq: 311.13, solfege: '升Re' },
+      { note: 'E4', key: 'D', isBlack: false, freq: 329.63, solfege: 'Mi' },
+      { note: 'F4', key: 'F', isBlack: false, freq: 349.23, solfege: 'Fa' },
+      { note: 'F#4', key: 'T', isBlack: true, freq: 369.99, solfege: '升Fa' },
+      { note: 'G4', key: 'G', isBlack: false, freq: 392.00, solfege: 'Sol' },
+      { note: 'G#4', key: 'Y', isBlack: true, freq: 415.30, solfege: '升Sol' },
+      { note: 'A4', key: 'H', isBlack: false, freq: 440.00, solfege: 'La' },
+      { note: 'A#4', key: 'U', isBlack: true, freq: 466.16, solfege: '升La' },
+      { note: 'B4', key: 'J', isBlack: false, freq: 493.88, solfege: 'Si' },
+      { note: 'C5', key: 'K', isBlack: false, freq: 523.25, solfege: '高音Do' },
+      { note: 'C#5', key: 'O', isBlack: true, freq: 554.37, solfege: '高音升Do' },
+      { note: 'D5', key: 'L', isBlack: false, freq: 587.33, solfege: '高音Re' },
+      { note: 'D#5', key: 'P', isBlack: true, freq: 622.25, solfege: '高音升Re' },
+      { note: 'E5', key: ';', isBlack: false, freq: 659.25, solfege: '高音Mi' },
+      { note: 'F5', key: "'", isBlack: false, freq: 698.46, solfege: '高音Fa' },
     ];
 
     const keyMap = {};
@@ -651,7 +611,7 @@
           <div class="kb-badge">${k.key}</div>
           <div class="note-sub">${k.note}</div>
         `;
-        el.addEventListener('mousedown', () => userPressKey(k.key));
+        el.addEventListener('mousedown', () => pressKey(k.key));
         whiteContainer.appendChild(el);
 
         const slot = document.createElement('div');
@@ -671,7 +631,7 @@
           `;
           el.addEventListener('mousedown', (e) => {
             e.stopPropagation();
-            userPressKey(k.key);
+            pressKey(k.key);
           });
           slot.appendChild(el);
         }
@@ -679,90 +639,204 @@
     });
 
     // -------------------------------------------------------------
-    // 3. 呂允《空拍》完整全曲和弦清單（從前奏到尾奏）
+    // 3. 呂允《空拍》真實主旋律音符資料庫 (全曲逐字琴譜)
     // -------------------------------------------------------------
-    const fullSong = [
+    const melodyNotes = [
       // === 前奏 INTRO ===
-      { sec: 'Intro', chord: 'Cadd9', lyric: '（鋼琴空靈前奏...）', primaryKey: 'A', keys: ['A', 'D', 'G', 'L'] },
-      { sec: 'Intro', chord: 'G/B', lyric: '（下行低音線...）', primaryKey: 'J', keys: ['J', 'S', 'G'] },
-      { sec: 'Intro', chord: 'Am7', lyric: '（空拍留白...）', primaryKey: 'H', keys: ['H', 'A', 'D', 'G'] },
-      { sec: 'Intro', chord: 'Gsus4', lyric: '（準備進主歌）', primaryKey: 'G', keys: ['G', 'K', 'L'] },
+      { sec: '前奏 Intro', word: '♫ 前奏1', note: 'G4', key: 'G', chord: 'Cadd9', phrase: '（鋼琴空靈前奏）' },
+      { sec: '前奏 Intro', word: '♫ 前奏2', note: 'D5', key: 'L', chord: 'Cadd9', phrase: '（高音 Re）' },
+      { sec: '前奏 Intro', word: '♫ 前奏3', note: 'E5', key: ';', chord: 'Cadd9', phrase: '（高音 Mi）' },
+      { sec: '前奏 Intro', word: '♫ 前奏4', note: 'G4', key: 'G', chord: 'G/B', phrase: '（低音下行 Si）' },
+      { sec: '前奏 Intro', word: '♫ 前奏5', note: 'B4', key: 'J', chord: 'G/B', phrase: '（留白空拍）' },
+      { sec: '前奏 Intro', word: '♫ 前奏6', note: 'E4', key: 'D', chord: 'Am7', phrase: '（準備進歌）' },
 
       // === 主歌 1 VERSE 1 ===
-      { sec: 'Verse 1', chord: 'Cadd9', lyric: '不要說 他已遠走', primaryKey: 'A', keys: ['A', 'D', 'G', 'L'] },
-      { sec: 'Verse 1', chord: 'G/B', lyric: '而我卻', primaryKey: 'J', keys: ['J', 'S', 'G'] },
-      { sec: 'Verse 1', chord: 'Am7', lyric: '停留', primaryKey: 'H', keys: ['H', 'A', 'D', 'G'] },
-      { sec: 'Verse 1', chord: 'Am/G', lyric: '多少等候', primaryKey: 'G', keys: ['G', 'A', 'D', 'H'] },
-      { sec: 'Verse 1', chord: 'Fsus2', lyric: '落空', primaryKey: 'F', keys: ['F', 'G', 'K'] },
-      { sec: 'Verse 1', chord: 'C/E', lyric: '多少寂寞', primaryKey: 'D', keys: ['D', 'G', 'K'] },
-      { sec: 'Verse 1', chord: 'Dm11', lyric: '滲透', primaryKey: 'S', keys: ['S', 'F', 'G', 'K'] },
-      { sec: 'Verse 1', chord: 'Gsus4', lyric: '...', primaryKey: 'G', keys: ['G', 'K', 'L'] },
-      { sec: 'Verse 1', chord: 'G', lyric: '...', primaryKey: 'G', keys: ['G', 'J', 'S'] },
+      { sec: '主歌 1', word: '不', note: 'D4', key: 'S', chord: 'Cadd9', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '要', note: 'E4', key: 'D', chord: 'Cadd9', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '說', note: 'E4', key: 'D', chord: 'Cadd9', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '他', note: 'C4', key: 'A', chord: 'G/B', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '已', note: 'D4', key: 'S', chord: 'G/B', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '遠', note: 'E4', key: 'D', chord: 'G/B', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '走', note: 'G4', key: 'G', chord: 'G/B', phrase: '不要說 他已遠走' },
+
+      { sec: '主歌 1', word: '而', note: 'C4', key: 'A', chord: 'Am7', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '我', note: 'D4', key: 'S', chord: 'Am7', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '卻', note: 'E4', key: 'D', chord: 'Am7', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '停', note: 'C4', key: 'A', chord: 'Am7', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '留', note: 'C4', key: 'A', chord: 'Am7', phrase: '而我卻停留' },
+
+      { sec: '主歌 1', word: '多', note: 'C4', key: 'A', chord: 'Am/G', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '少', note: 'D4', key: 'S', chord: 'Am/G', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '等', note: 'E4', key: 'D', chord: 'Am/G', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '候', note: 'G4', key: 'G', chord: 'Am/G', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '落', note: 'E4', key: 'D', chord: 'Fsus2', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '空', note: 'D4', key: 'S', chord: 'Fsus2', phrase: '多少等候 落空' },
+
+      { sec: '主歌 1', word: '多', note: 'C4', key: 'A', chord: 'C/E', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '少', note: 'D4', key: 'S', chord: 'C/E', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '寂', note: 'E4', key: 'D', chord: 'C/E', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '寞', note: 'G4', key: 'G', chord: 'C/E', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '滲', note: 'E4', key: 'D', chord: 'Dm11', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '透', note: 'D4', key: 'S', chord: 'Gsus4', phrase: '多少寂寞 滲透' },
 
       // === 主歌 2 VERSE 2 ===
-      { sec: 'Verse 2', chord: 'Cadd9', lyric: '我想走 但始終埋沒', primaryKey: 'A', keys: ['A', 'D', 'G', 'L'] },
-      { sec: 'Verse 2', chord: 'G/B', lyric: '...', primaryKey: 'J', keys: ['J', 'S', 'G'] },
-      { sec: 'Verse 2', chord: 'Am7', lyric: '漩渦', primaryKey: 'H', keys: ['H', 'A', 'D', 'G'] },
-      { sec: 'Verse 2', chord: 'Am/G', lyric: '...', primaryKey: 'G', keys: ['G', 'A', 'D', 'H'] },
-      { sec: 'Verse 2', chord: 'Fsus2', lyric: '疲憊抹去自我', primaryKey: 'F', keys: ['F', 'G', 'K'] },
-      { sec: 'Verse 2', chord: 'C/E', lyric: '無奈擊潰從容', primaryKey: 'D', keys: ['D', 'G', 'K'] },
-      { sec: 'Verse 2', chord: 'Dm7', lyric: '真正失去的比想像更多', primaryKey: 'S', keys: ['S', 'F', 'H', 'K'] },
-      { sec: 'Verse 2', chord: 'Gsus4', lyric: '...', primaryKey: 'G', keys: ['G', 'K', 'L'] },
-      { sec: 'Verse 2', chord: 'G', lyric: '...', primaryKey: 'G', keys: ['G', 'J', 'S'] },
+      { sec: '主歌 2', word: '我', note: 'D4', key: 'S', chord: 'Cadd9', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '想', note: 'E4', key: 'D', chord: 'Cadd9', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '走', note: 'E4', key: 'D', chord: 'Cadd9', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '但', note: 'C4', key: 'A', chord: 'G/B', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '始', note: 'D4', key: 'S', chord: 'G/B', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '終', note: 'E4', key: 'D', chord: 'G/B', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '埋', note: 'G4', key: 'G', chord: 'G/B', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '沒', note: 'E4', key: 'D', chord: 'Am7', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '漩', note: 'D4', key: 'S', chord: 'Am7', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '渦', note: 'C4', key: 'A', chord: 'Am/G', phrase: '我想走 但始終埋沒 漩渦' },
+
+      { sec: '主歌 2', word: '疲', note: 'C4', key: 'A', chord: 'Fsus2', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '憊', note: 'D4', key: 'S', chord: 'Fsus2', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '抹', note: 'E4', key: 'D', chord: 'Fsus2', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '去', note: 'G4', key: 'G', chord: 'Fsus2', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '自', note: 'E4', key: 'D', chord: 'Fsus2', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '我', note: 'D4', key: 'S', chord: 'Fsus2', phrase: '疲憊抹去自我' },
+
+      { sec: '主歌 2', word: '無', note: 'C4', key: 'A', chord: 'C/E', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '奈', note: 'D4', key: 'S', chord: 'C/E', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '擊', note: 'E4', key: 'D', chord: 'C/E', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '潰', note: 'G4', key: 'G', chord: 'C/E', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '從', note: 'A4', key: 'H', chord: 'C/E', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '容', note: 'G4', key: 'G', chord: 'C/E', phrase: '無奈擊潰從容' },
+
+      { sec: '主歌 2', word: '真', note: 'G4', key: 'G', chord: 'Dm7', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '正', note: 'E4', key: 'D', chord: 'Dm7', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '失', note: 'D4', key: 'S', chord: 'Dm7', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '去', note: 'C4', key: 'A', chord: 'Dm7', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '的', note: 'D4', key: 'S', chord: 'Dm7', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '比', note: 'E4', key: 'D', chord: 'Gsus4', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '想', note: 'D4', key: 'S', chord: 'Gsus4', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '像', note: 'D4', key: 'S', chord: 'G', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '更', note: 'E4', key: 'D', chord: 'G', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '多', note: 'D4', key: 'S', chord: 'G', phrase: '真正失去的比想像更多' },
 
       // === 導歌 PRE-CHORUS ===
-      { sec: 'Pre-Chorus', chord: 'E', lyric: '黑夜失眠簇擁內心喧囂', primaryKey: 'D', keys: ['D', 'Y', 'J'] },
-      { sec: 'Pre-Chorus', chord: 'E/G#', lyric: '煩悶的生活', primaryKey: 'Y', keys: ['Y', 'D', 'J'] },
-      { sec: 'Pre-Chorus', chord: 'Am7', lyric: '一天天晃過', primaryKey: 'H', keys: ['H', 'A', 'D', 'G'] },
-      { sec: 'Pre-Chorus', chord: 'Am/G', lyric: '...', primaryKey: 'G', keys: ['G', 'A', 'D', 'H'] },
-      { sec: 'Pre-Chorus', chord: 'Dm11(7)', lyric: '難以越過', primaryKey: 'S', keys: ['S', 'F', 'G', 'K'] },
-      { sec: 'Pre-Chorus', chord: 'D11(7)', lyric: '那空洞', primaryKey: 'S', keys: ['S', 'T', 'G', 'K'] },
-      { sec: 'Pre-Chorus', chord: 'Gsus4', lyric: '...', primaryKey: 'G', keys: ['G', 'K', 'L'] },
-      { sec: 'Pre-Chorus', chord: 'G', lyric: '...', primaryKey: 'G', keys: ['G', 'J', 'S'] },
+      { sec: '導歌 Pre-Chorus', word: '黑', note: 'E4', key: 'D', chord: 'E', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '夜', note: 'E4', key: 'D', chord: 'E', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '失', note: 'E4', key: 'D', chord: 'E', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '眠', note: 'E4', key: 'D', chord: 'E', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '簇', note: 'G#4', key: 'Y', chord: 'E/G#', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '擁', note: 'G#4', key: 'Y', chord: 'E/G#', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '內', note: 'A4', key: 'H', chord: 'Am7', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '心', note: 'A4', key: 'H', chord: 'Am7', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '喧', note: 'G4', key: 'G', chord: 'Am7', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '囂', note: 'E4', key: 'D', chord: 'Am/G', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '煩', note: 'D4', key: 'S', chord: 'Am/G', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '悶', note: 'C4', key: 'A', chord: 'Am/G', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '的', note: 'D4', key: 'S', chord: 'Am/G', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '生', note: 'E4', key: 'D', chord: 'Am/G', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '活', note: 'D4', key: 'S', chord: 'Am/G', phrase: '煩悶的生活' },
+
+      { sec: '導歌 Pre-Chorus', word: '一', note: 'E4', key: 'D', chord: 'Dm11', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '天', note: 'G4', key: 'G', chord: 'Dm11', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '天', note: 'E4', key: 'D', chord: 'Dm11', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '晃', note: 'D4', key: 'S', chord: 'D11', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '過', note: 'C4', key: 'A', chord: 'D11', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '難', note: 'C4', key: 'A', chord: 'Gsus4', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '以', note: 'D4', key: 'S', chord: 'Gsus4', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '越', note: 'F#4', key: 'T', chord: 'Gsus4', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '過', note: 'G4', key: 'G', chord: 'Gsus4', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '那', note: 'A4', key: 'H', chord: 'G', phrase: '那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '空', note: 'G4', key: 'G', chord: 'G', phrase: '那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '洞', note: 'G4', key: 'G', chord: 'G', phrase: '那空洞' },
 
       // === 副歌 1 CHORUS 1 ===
-      { sec: 'Chorus 1', chord: 'Cadd9', lyric: '我一片空白', primaryKey: 'A', keys: ['A', 'D', 'G', 'L'] },
-      { sec: 'Chorus 1', chord: 'G/B', lyric: '停滯在灰色地帶', primaryKey: 'J', keys: ['J', 'S', 'G'] },
-      { sec: 'Chorus 1', chord: 'Am7', lyric: '說不出內心感慨', primaryKey: 'H', keys: ['H', 'A', 'D', 'G'] },
-      { sec: 'Chorus 1', chord: 'Am/G', lyric: '...', primaryKey: 'G', keys: ['G', 'A', 'D', 'H'] },
-      { sec: 'Chorus 1', chord: 'Fsus2', lyric: '步履蹣跚', primaryKey: 'F', keys: ['F', 'G', 'K'] },
-      { sec: 'Chorus 1', chord: 'C/E', lyric: '...', primaryKey: 'D', keys: ['D', 'G', 'K'] },
-      { sec: 'Chorus 1', chord: 'Dm7', lyric: '快點回來 就不哀嘆', primaryKey: 'S', keys: ['S', 'F', 'H', 'K'] },
-      { sec: 'Chorus 1', chord: 'Gsus4', lyric: '...', primaryKey: 'G', keys: ['G', 'K', 'L'] },
-      { sec: 'Chorus 1', chord: 'G', lyric: '...', primaryKey: 'G', keys: ['G', 'J', 'S'] },
+      { sec: '副歌 1', word: '我', note: 'C5', key: 'K', chord: 'Cadd9', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '一', note: 'C5', key: 'K', chord: 'Cadd9', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '片', note: 'G4', key: 'G', chord: 'Cadd9', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '空', note: 'G4', key: 'G', chord: 'Cadd9', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '白', note: 'G4', key: 'G', chord: 'Cadd9', phrase: '我一片空白' },
+
+      { sec: '副歌 1', word: '停', note: 'C5', key: 'K', chord: 'G/B', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '滯', note: 'D5', key: 'L', chord: 'G/B', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '在', note: 'E5', key: ';', chord: 'G/B', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '灰', note: 'C5', key: 'K', chord: 'Am7', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '色', note: 'C5', key: 'K', chord: 'Am7', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '地', note: 'A4', key: 'H', chord: 'Am/G', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '帶', note: 'A4', key: 'H', chord: 'Am/G', phrase: '停滯在灰色地帶' },
+
+      { sec: '副歌 1', word: '說', note: 'D5', key: 'L', chord: 'Fsus2', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '不', note: 'D5', key: 'L', chord: 'Fsus2', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '出', note: 'D5', key: 'L', chord: 'Fsus2', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '內', note: 'D5', key: 'L', chord: 'C/E', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '心', note: 'D5', key: 'L', chord: 'C/E', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '感', note: 'C5', key: 'K', chord: 'Dm7', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '慨', note: 'C5', key: 'K', chord: 'Dm7', phrase: '說不出內心感慨' },
+
+      { sec: '副歌 1', word: '步', note: 'A4', key: 'H', chord: 'Dm7', phrase: '步履蹣跚' },
+      { sec: '副歌 1', word: '履', note: 'A4', key: 'H', chord: 'Gsus4', phrase: '步履蹣跚' },
+      { sec: '副歌 1', word: '蹣', note: 'D5', key: 'L', chord: 'Gsus4', phrase: '步履蹣跚' },
+      { sec: '副歌 1', word: '跚', note: 'C5', key: 'K', chord: 'G', phrase: '步履蹣跚' },
+
+      { sec: '副歌 1', word: '快', note: 'C5', key: 'K', chord: 'Cadd9', phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '點', note: 'D5', key: 'L', chord: 'Cadd9', phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '回', note: 'E5', key: ';', chord: 'G/B', phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '來', note: 'C5', key: 'K', chord: 'G/B', phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '就', note: 'D5', key: 'L', chord: 'Am7', phrase: '就不哀嘆' },
+      { sec: '副歌 1', word: '不', note: 'D5', key: 'L', chord: 'Am7', phrase: '就不哀嘆' },
+      { sec: '副歌 1', word: '哀', note: 'C5', key: 'K', chord: 'Am/G', phrase: '就不哀嘆' },
+      { sec: '副歌 1', word: '嘆', note: 'C5', key: 'K', chord: 'Am/G', phrase: '就不哀嘆' },
 
       // === 副歌 2 CHORUS 2 ===
-      { sec: 'Chorus 2', chord: 'Cadd9', lyric: '又一段空拍', primaryKey: 'A', keys: ['A', 'D', 'G', 'L'] },
-      { sec: 'Chorus 2', chord: 'G/B', lyric: '停止在絕望塵埃', primaryKey: 'J', keys: ['J', 'S', 'G'] },
-      { sec: 'Chorus 2', chord: 'Am7', lyric: '吹散陰霾', primaryKey: 'H', keys: ['H', 'A', 'D', 'G'] },
-      { sec: 'Chorus 2', chord: 'Am/G', lyric: '...', primaryKey: 'G', keys: ['G', 'A', 'D', 'H'] },
-      { sec: 'Chorus 2', chord: 'Fsus2', lyric: '卸下重擔', primaryKey: 'F', keys: ['F', 'G', 'K'] },
-      { sec: 'Chorus 2', chord: 'C/E', lyric: '...', primaryKey: 'D', keys: ['D', 'G', 'K'] },
-      { sec: 'Chorus 2', chord: 'Dm7', lyric: '就算重來', primaryKey: 'S', keys: ['S', 'F', 'H', 'K'] },
-      { sec: 'Chorus 2', chord: 'G', lyric: '並非失敗', primaryKey: 'G', keys: ['G', 'J', 'S'] },
+      { sec: '副歌 2', word: '又', note: 'C5', key: 'K', chord: 'Cadd9', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '一', note: 'C5', key: 'K', chord: 'Cadd9', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '段', note: 'G4', key: 'G', chord: 'Cadd9', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '空', note: 'G4', key: 'G', chord: 'Cadd9', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '拍', note: 'G4', key: 'G', chord: 'Cadd9', phrase: '又一段空拍' },
 
-      // === 尾奏 OUTRO ===
-      { sec: 'Outro', chord: 'Cadd9', lyric: '（琴聲逐漸平息，留白結束）', primaryKey: 'A', keys: ['A', 'D', 'G', 'L'] },
+      { sec: '副歌 2', word: '停', note: 'C5', key: 'K', chord: 'G/B', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '止', note: 'D5', key: 'L', chord: 'G/B', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '在', note: 'E5', key: ';', chord: 'G/B', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '絕', note: 'C5', key: 'K', chord: 'Am7', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '望', note: 'C5', key: 'K', chord: 'Am7', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '塵', note: 'A4', key: 'H', chord: 'Am/G', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '埃', note: 'A4', key: 'H', chord: 'Am/G', phrase: '停止在絕望塵埃' },
+
+      { sec: '副歌 2', word: '吹', note: 'D5', key: 'L', chord: 'Fsus2', phrase: '吹散陰霾 卸下重擔' },
+      { sec: '副歌 2', word: '散', note: 'D5', key: 'L', chord: 'Fsus2', phrase: '吹散陰霾 卸下重擔' },
+      { sec: '副歌 2', word: '陰', note: 'D5', key: 'L', chord: 'Fsus2', phrase: '吹散陰霾 卸下重擔' },
+      { sec: '副歌 2', word: '霾', note: 'D5', key: 'L', chord: 'C/E', phrase: '吹散陰霾 卸下重擔' },
+
+      { sec: '副歌 2', word: '卸', note: 'E5', key: ';', chord: 'C/E', phrase: '卸下重擔' },
+      { sec: '副歌 2', word: '下', note: 'D5', key: 'L', chord: 'Dm7', phrase: '卸下重擔' },
+      { sec: '副歌 2', word: '重', note: 'C5', key: 'K', chord: 'Dm7', phrase: '卸下重擔' },
+      { sec: '副歌 2', word: '擔', note: 'C5', key: 'K', chord: 'Dm7', phrase: '卸下重擔' },
+
+      { sec: '尾奏 Outro', word: '就', note: 'C5', key: 'K', chord: 'Dm7', phrase: '就算重來 並非失敗' },
+      { sec: '尾奏 Outro', word: '算', note: 'D5', key: 'L', chord: 'Dm7', phrase: '就算重來 並非失敗' },
+      { sec: '尾奏 Outro', word: '重', note: 'E5', key: ';', chord: 'G', phrase: '就算重來 並非失敗' },
+      { sec: '尾奏 Outro', word: '來', note: 'G4', key: 'G', chord: 'G', phrase: '就算重來 並非失敗' },
+
+      { sec: '尾奏 Outro', word: '並', note: 'E4', key: 'D', chord: 'Cadd9', phrase: '並非失敗' },
+      { sec: '尾奏 Outro', word: '非', note: 'D4', key: 'S', chord: 'Cadd9', phrase: '並非失敗' },
+      { sec: '尾奏 Outro', word: '失', note: 'C4', key: 'A', chord: 'Cadd9', phrase: '並非失敗' },
+      { sec: '尾奏 Outro', word: '敗', note: 'C4', key: 'A', chord: 'Cadd9', phrase: '（留白完結）' },
     ];
 
     // -------------------------------------------------------------
-    // 4. 遊戲狀態與互動邏輯
+    // 4. 遊戲狀態與互動
     // -------------------------------------------------------------
-    let currentIndex = 0;
+    let noteIdx = 0;
     let combo = 0;
-    let currentMode = 'autoAdvance'; // 'autoAdvance' | 'oneKey' | 'autoDemo'
-    let autoDemoTimer = null;
+    let mode = 'melody'; // 'melody' | 'chord' | 'autoDemo'
+    let autoTimer = null;
 
-    // 建立段落導航按鈕
+    // 段落快速跳轉
     const sectionNav = document.getElementById('sectionNavContainer');
     const sections = [
       { name: '前奏 Intro', idx: 0 },
-      { name: '主歌 1', idx: 4 },
-      { name: '主歌 2', idx: 13 },
-      { name: '導歌 Pre-Chorus', idx: 22 },
-      { name: '副歌 1', idx: 30 },
-      { name: '副歌 2', idx: 39 },
-      { name: '尾奏 Outro', idx: 47 }
+      { name: '主歌 1', idx: 6 },
+      { name: '主歌 2', idx: 24 },
+      { name: '導歌 Pre-Chorus', idx: 44 },
+      { name: '副歌 1', idx: 60 },
+      { name: '副歌 2', idx: 80 },
+      { name: '尾奏 Outro', idx: 96 }
     ];
 
     sections.forEach(s => {
@@ -771,193 +845,135 @@
       btn.id = `sec-btn-${s.idx}`;
       btn.textContent = s.name;
       btn.addEventListener('click', () => {
-        currentIndex = s.idx;
+        noteIdx = s.idx;
         updateUI();
       });
       sectionNav.appendChild(btn);
     });
 
     function updateUI() {
-      const step = fullSong[currentIndex];
+      const item = melodyNotes[noteIdx];
+      const k = keyMap[item.key];
 
-      // 更新進度條
-      const pct = Math.round((currentIndex / (fullSong.length - 1)) * 100);
+      // 更新進度
+      const pct = Math.round((noteIdx / (melodyNotes.length - 1)) * 100);
       document.getElementById('progressBar').style.width = `${pct}%`;
       document.getElementById('lblProgressPct').textContent = `${pct}%`;
-      document.getElementById('lblSectionProgress').textContent = `段落：${step.sec} (${currentIndex + 1}/${fullSong.length})`;
+      document.getElementById('lblSectionProgress').textContent = `段落：${item.sec} (${noteIdx + 1}/${melodyNotes.length})`;
 
-      // 更新導航按鈕樣式
+      // 更新段落按鈕
       document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
-      const activeSec = [...sections].reverse().find(s => currentIndex >= s.idx);
+      const activeSec = [...sections].reverse().find(s => noteIdx >= s.idx);
       if (activeSec) {
-        const activeBtn = document.getElementById(`sec-btn-${activeSec.idx}`);
-        if (activeBtn) activeBtn.classList.add('active');
+        const b = document.getElementById(`sec-btn-${activeSec.idx}`);
+        if (b) b.classList.add('active');
       }
 
-      // 更新舞台資訊
-      document.getElementById('lblTag').textContent = step.sec.toUpperCase();
-      document.getElementById('lblChord').textContent = step.chord;
-      document.getElementById('lblLyric').textContent = step.lyric;
+      // 更新文字
+      document.getElementById('lblPhrase').textContent = item.phrase;
+      document.getElementById('lblWord').textContent = item.word;
+      document.getElementById('lblNote').textContent = `${item.note} (${k ? k.solfege : ''})`;
+      document.getElementById('lblChord').textContent = `和弦：${item.chord}`;
+      document.getElementById('keyBadge').textContent = item.key;
       document.getElementById('comboCount').textContent = combo;
 
-      if (currentMode === 'oneKey') {
-        document.getElementById('keyBadgePrimary').textContent = step.primaryKey;
-        document.getElementById('secondaryKeys').textContent = '敲一下立即彈出整組 3/4 拍和弦！';
-      } else {
-        document.getElementById('keyBadgePrimary').textContent = step.primaryKey;
-        document.getElementById('secondaryKeys').textContent = `或按下組合鍵: ${step.keys.join(' + ')}`;
-      }
-
-      // 高亮鋼琴琴鍵
-      document.querySelectorAll('.key').forEach(k => k.classList.remove('guided'));
-      step.keys.forEach(k => {
-        const el = document.getElementById(`key-${k}`);
-        if (el) el.classList.add('guided');
-      });
+      // 琴鍵高亮
+      document.querySelectorAll('.key').forEach(el => el.classList.remove('guided'));
+      const targetEl = document.getElementById(`key-${item.key}`);
+      if (targetEl) targetEl.classList.add('guided');
     }
 
-    // 觸發成功推進下一步
-    function advanceSuccess() {
+    function advanceNote() {
       combo++;
       const stage = document.getElementById('stageBox');
       stage.classList.add('success-flash');
-      setTimeout(() => stage.classList.remove('success-flash'), 250);
+      setTimeout(() => stage.classList.remove('success-flash'), 200);
 
-      if (currentIndex < fullSong.length - 1) {
-        currentIndex++;
+      if (noteIdx < melodyNotes.length - 1) {
+        noteIdx++;
       } else {
-        currentIndex = 0; // 循環回到前奏
+        noteIdx = 0;
       }
       updateUI();
     }
 
-    // 使用者敲擊鍵盤
-    function userPressKey(char) {
+    function pressKey(char) {
       char = char.toUpperCase();
       const k = keyMap[char];
       if (!k) return;
 
-      const step = fullSong[currentIndex];
+      const target = melodyNotes[noteIdx];
       const el = document.getElementById(`key-${k.key}`);
       if (el) {
         el.classList.add('active');
         setTimeout(() => el.classList.remove('active'), 180);
       }
 
-      // 1. 新手單鍵伴奏模式：只要敲主根音，自動彈出全套和弦並前進！
-      if (currentMode === 'oneKey') {
-        if (char === step.primaryKey || step.keys.includes(char)) {
-          // 取得該和弦的全部頻率
-          const freqs = step.keys.map(keyChar => keyMap[keyChar] ? keyMap[keyChar].freq : 261.63);
-          playChordArpeggio(freqs);
-          advanceSuccess();
-        } else {
-          // 按其他鍵只發單音
-          playPianoNote(k.freq);
-        }
-        return;
-      }
-
-      // 2. 按對自動前進模式
+      // 彈奏該音符
       playPianoNote(k.freq);
-      if (step.keys.includes(char)) {
-        // 紀錄符合目標按鍵，自動前進
-        advanceSuccess();
+
+      // 若按對當前目標音，自動加上和弦低音並前進到下一個音！
+      if (char === target.key) {
+        // 自動加上和弦根音，創造豐滿鋼琴聲
+        if (target.chord.includes('C')) playBassNote(261.63);
+        else if (target.chord.includes('G')) playBassNote(196.00);
+        else if (target.chord.includes('A')) playBassNote(220.00);
+        else if (target.chord.includes('F')) playBassNote(174.61);
+        else if (target.chord.includes('E')) playBassNote(164.81);
+        else if (target.chord.includes('D')) playBassNote(146.83);
+
+        advanceNote();
       }
     }
 
     window.addEventListener('keydown', (e) => {
       if (e.repeat) return;
       const char = e.key.toUpperCase();
-      if (keyMap[char]) {
-        userPressKey(char);
-      }
+      if (keyMap[char]) pressKey(char);
     });
 
-    // -------------------------------------------------------------
-    // 5. 模式切換與控制按鈕
-    // -------------------------------------------------------------
-    const btnAutoAdvance = document.getElementById('btnModeAutoAdvance');
-    const btnOneKey = document.getElementById('btnModeOneKey');
-    const btnAutoDemo = document.getElementById('btnModeAutoDemo');
-
-    function clearAutoDemo() {
-      if (autoDemoTimer) {
-        clearInterval(autoDemoTimer);
-        autoDemoTimer = null;
-      }
-    }
-
-    btnAutoAdvance.addEventListener('click', () => {
-      clearAutoDemo();
-      currentMode = 'autoAdvance';
-      btnAutoAdvance.classList.add('active');
-      btnOneKey.classList.remove('active');
-      btnAutoDemo.classList.remove('active');
-      updateUI();
+    // 模式切換
+    document.getElementById('btnModeMelody').addEventListener('click', function() {
+      clearInterval(autoTimer);
+      autoTimer = null;
+      document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
     });
 
-    btnOneKey.addEventListener('click', () => {
-      clearAutoDemo();
-      currentMode = 'oneKey';
-      btnOneKey.classList.add('active');
-      btnAutoAdvance.classList.remove('active');
-      btnAutoDemo.classList.remove('active');
-      updateUI();
-    });
-
-    btnAutoDemo.addEventListener('click', () => {
-      if (currentMode === 'autoDemo') {
-        clearAutoDemo();
-        currentMode = 'autoAdvance';
-        btnAutoAdvance.classList.add('active');
-        btnAutoDemo.classList.remove('active');
+    document.getElementById('btnModeAutoDemo').addEventListener('click', function() {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        this.classList.remove('active');
+        document.getElementById('btnModeMelody').classList.add('active');
         return;
       }
-      currentMode = 'autoDemo';
-      btnAutoDemo.classList.add('active');
-      btnAutoAdvance.classList.remove('active');
-      btnOneKey.classList.remove('active');
+      document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
 
-      clearAutoDemo();
-      let beat = 0;
-      autoDemoTimer = setInterval(() => {
-        beat = (beat % 3) + 1;
-        document.getElementById('dot1').classList.toggle('active', beat === 1);
-        document.getElementById('dot2').classList.toggle('active', beat === 2);
-        document.getElementById('dot3').classList.toggle('active', beat === 3);
-
-        if (beat === 1) {
-          const step = fullSong[currentIndex];
-          const freqs = step.keys.map(k => keyMap[k] ? keyMap[k].freq : 261.63);
-          playChordArpeggio(freqs);
-          advanceSuccess();
-        }
-      }, 900); // 66 BPM
+      autoTimer = setInterval(() => {
+        const cur = melodyNotes[noteIdx];
+        pressKey(cur.key);
+      }, 550); // 每半秒自動彈奏一個音
     });
 
     document.getElementById('btnPrev').addEventListener('click', () => {
-      currentIndex = Math.max(0, currentIndex - 1);
+      noteIdx = Math.max(0, noteIdx - 1);
       updateUI();
     });
 
     document.getElementById('btnNext').addEventListener('click', () => {
-      currentIndex = Math.min(fullSong.length - 1, currentIndex + 1);
+      noteIdx = Math.min(melodyNotes.length - 1, noteIdx + 1);
       updateUI();
     });
 
-    document.getElementById('btnResetSong').addEventListener('click', () => {
-      currentIndex = 0;
+    document.getElementById('btnReset').addEventListener('click', () => {
+      noteIdx = 0;
       combo = 0;
       updateUI();
     });
 
-    document.getElementById('btnToggleSound').addEventListener('click', function() {
-      isMuted = !isMuted;
-      this.textContent = isMuted ? '🔇 鋼琴音量：靜音' : '🔊 鋼琴音量：正常';
-    });
-
-    // 啟動首頁
+    // 啟動
     updateUI();
   </script>
 </body>
