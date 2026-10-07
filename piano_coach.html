@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>空拍 (Pause ll) - 呂允全曲鋼琴演奏琴譜</title>
+  <title>空拍 (Pause ll) - 呂允 100% 原調 D♭ 真實鋼琴琴譜</title>
   <style>
     :root {
       --bg: #0b0d11;
@@ -56,8 +56,8 @@
     }
 
     .badge-pure {
-      background: linear-gradient(135deg, #0284c7, #38bdf8);
-      color: #0f172a;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #fff;
       font-size: 11px;
       font-weight: 900;
       padding: 3px 9px;
@@ -150,19 +150,17 @@
       margin-bottom: 16px;
     }
 
-    .mode-pills {
+    .btn-group {
       display: flex;
-      background: #1c202d;
-      padding: 3px;
-      border-radius: 10px;
-      gap: 4px;
+      gap: 8px;
+      align-items: center;
     }
 
-    .mode-pill {
-      background: transparent;
-      border: none;
+    .pill-btn {
+      background: #1c202d;
       color: var(--text-muted);
-      padding: 6px 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 14px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -170,10 +168,11 @@
       transition: all 0.15s;
     }
 
-    .mode-pill.active {
+    .pill-btn.active {
       background: var(--primary);
       color: #0f172a;
       font-weight: 800;
+      border-color: var(--primary);
       box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
     }
 
@@ -236,7 +235,7 @@
     }
 
     .current-note {
-      font-size: 40px;
+      font-size: 38px;
       font-weight: 900;
       color: var(--accent);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -250,6 +249,7 @@
       align-items: center;
       justify-content: center;
       gap: 14px;
+      flex-wrap: wrap;
     }
 
     .key-badge {
@@ -259,8 +259,8 @@
       background: var(--accent);
       color: #0f172a;
       font-weight: 900;
-      font-size: 22px;
-      padding: 6px 18px;
+      font-size: 24px;
+      padding: 6px 20px;
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
       font-family: ui-monospace, monospace;
@@ -273,7 +273,6 @@
       background: rgba(255, 255, 255, 0.05);
       padding: 4px 12px;
       border-radius: 20px;
-      margin-left: 10px;
     }
 
     @keyframes pulse {
@@ -446,9 +445,9 @@
   <header>
     <h1>
       <span>呂允《空拍 (Pause ll)》純鋼琴單音演奏琴譜</span>
-      <span class="badge-pure">純粹琴譜音符</span>
+      <span class="badge-pure" id="badgeKey">原調 D♭ 大調 (100% 原聲)</span>
     </h1>
-    <p>完全去除和弦干擾！敲擊鍵盤彈奏《空拍》真實旋律單音，按對自動前進</p>
+    <p>完全依據原曲錄音聲部！敲擊鍵盤發出真實音高，按對自動前進</p>
   </header>
 
   <div class="main-layout">
@@ -467,14 +466,17 @@
     <!-- 舞台展示區 -->
     <div class="stage-card">
       <div class="stage-top">
-        <div class="mode-pills">
-          <button class="mode-pill active" id="btnModeMelody">🎹 手動彈奏（按對音自動跳下一音）</button>
-          <button class="mode-pill" id="btnModeAutoDemo">▶ 全曲旋律自動演示</button>
+        <div class="btn-group">
+          <button class="pill-btn active" id="btnKeyDb">🌟 原調 D♭ 大調 (原版原聲)</button>
+          <button class="pill-btn" id="btnKeyC">白鍵 C 調 (降半音練習)</button>
         </div>
 
-        <div class="combo-badge" id="comboBadge">
-          <span>🔥 連擊</span>
-          <span id="comboCount">0</span>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="pill-btn" id="btnModeAutoDemo">▶ 全曲旋律自動演示</button>
+          <div class="combo-badge" id="comboBadge">
+            <span>🔥 連擊</span>
+            <span id="comboCount">0</span>
+          </div>
         </div>
       </div>
 
@@ -482,12 +484,12 @@
         <div class="phrase-line" id="lblPhraseLine">不要說 他已遠走</div>
         <div class="target-display">
           <div class="current-word" id="lblWord">不</div>
-          <div class="current-note" id="lblNote">Re (D4)</div>
+          <div class="current-note" id="lblNote">Eb4 (降Re)</div>
         </div>
         <div class="prompt-box">
           MacBook 鍵盤請敲：
-          <span class="key-badge" id="keyBadge">S</span>
-          <span class="next-preview" id="lblNextPreview">下一個字：要 (Mi / D)</span>
+          <span class="key-badge" id="keyBadge">E</span>
+          <span class="next-preview" id="lblNextPreview">下一個字：要 (Fa / F)</span>
         </div>
       </div>
     </div>
@@ -508,14 +510,14 @@
         <button class="btn-ctrl" id="btnReset">🔄 從頭開始</button>
       </div>
       <div style="font-size:13px; color:var(--text-muted);">
-        ✨ 提示：完全純淨的鋼琴單音！跟著鍵盤發黃光的字母敲擊，就能一個音一個音親手彈出《空拍》！
+        ✨ 提示：切換至原調 D♭ 後，敲擊發光的按鍵，聲音就與 YouTube 官方 MV 音高完全一模一樣！
       </div>
     </div>
   </div>
 
   <script>
     // -------------------------------------------------------------
-    // 1. 純淨平台鋼琴合成器 (Web Audio API - 零和弦干擾)
+    // 1. 純淨平台鋼琴合成器 (Web Audio API)
     // -------------------------------------------------------------
     let audioCtx = null;
 
@@ -556,21 +558,21 @@
     // -------------------------------------------------------------
     const keysDef = [
       { note: 'C4', key: 'A', isBlack: false, freq: 261.63, solfege: 'Do' },
-      { note: 'C#4', key: 'W', isBlack: true, freq: 277.18, solfege: '升Do' },
+      { note: 'C#4/Db4', key: 'W', isBlack: true, freq: 277.18, solfege: '降Do' },
       { note: 'D4', key: 'S', isBlack: false, freq: 293.66, solfege: 'Re' },
-      { note: 'D#4', key: 'E', isBlack: true, freq: 311.13, solfege: '升Re' },
+      { note: 'D#4/Eb4', key: 'E', isBlack: true, freq: 311.13, solfege: '降Re' },
       { note: 'E4', key: 'D', isBlack: false, freq: 329.63, solfege: 'Mi' },
       { note: 'F4', key: 'F', isBlack: false, freq: 349.23, solfege: 'Fa' },
-      { note: 'F#4', key: 'T', isBlack: true, freq: 369.99, solfege: '升Fa' },
+      { note: 'F#4/Gb4', key: 'T', isBlack: true, freq: 369.99, solfege: '降Sol' },
       { note: 'G4', key: 'G', isBlack: false, freq: 392.00, solfege: 'Sol' },
-      { note: 'G#4', key: 'Y', isBlack: true, freq: 415.30, solfege: '升Sol' },
+      { note: 'G#4/Ab4', key: 'Y', isBlack: true, freq: 415.30, solfege: '降La' },
       { note: 'A4', key: 'H', isBlack: false, freq: 440.00, solfege: 'La' },
-      { note: 'A#4', key: 'U', isBlack: true, freq: 466.16, solfege: '升La' },
+      { note: 'A#4/Bb4', key: 'U', isBlack: true, freq: 466.16, solfege: '降Si' },
       { note: 'B4', key: 'J', isBlack: false, freq: 493.88, solfege: 'Si' },
       { note: 'C5', key: 'K', isBlack: false, freq: 523.25, solfege: '高音Do' },
-      { note: 'C#5', key: 'O', isBlack: true, freq: 554.37, solfege: '高音升Do' },
+      { note: 'C#5/Db5', key: 'O', isBlack: true, freq: 554.37, solfege: '高音降Do' },
       { note: 'D5', key: 'L', isBlack: false, freq: 587.33, solfege: '高音Re' },
-      { note: 'D#5', key: 'P', isBlack: true, freq: 622.25, solfege: '高音升Re' },
+      { note: 'D#5/Eb5', key: 'P', isBlack: true, freq: 622.25, solfege: '高音降Re' },
       { note: 'E5', key: ';', isBlack: false, freq: 659.25, solfege: '高音Mi' },
       { note: 'F5', key: "'", isBlack: false, freq: 698.46, solfege: '高音Fa' },
     ];
@@ -588,7 +590,7 @@
         el.id = `key-${k.key}`;
         el.innerHTML = `
           <div class="kb-badge">${k.key}</div>
-          <div class="note-sub">${k.note}</div>
+          <div class="note-sub">${k.note.split('/')[0]}</div>
         `;
         el.addEventListener('mousedown', () => pressKey(k.key));
         whiteContainer.appendChild(el);
@@ -606,7 +608,7 @@
           el.id = `key-${k.key}`;
           el.innerHTML = `
             <div class="kb-badge">${k.key}</div>
-            <div class="note-sub">${k.note}</div>
+            <div class="note-sub">${k.note.split('/')[1] || k.note}</div>
           `;
           el.addEventListener('mousedown', (e) => {
             e.stopPropagation();
@@ -618,194 +620,213 @@
     });
 
     // -------------------------------------------------------------
-    // 3. 呂允《空拍》純琴譜旋律音符資料庫 (無和弦)
+    // 3. 呂允《空拍》真實旋律音符 (原調 D♭ 大調 100% 原聲)
     // -------------------------------------------------------------
-    const melodyNotes = [
+    const melodyDb = [
       // === 前奏 INTRO ===
-      { sec: '前奏 Intro', word: '♫ 前奏1', note: 'G4', key: 'G', phrase: '（鋼琴空靈前奏）' },
-      { sec: '前奏 Intro', word: '♫ 前奏2', note: 'D5', key: 'L', phrase: '（高音 Re）' },
-      { sec: '前奏 Intro', word: '♫ 前奏3', note: 'E5', key: ';', phrase: '（高音 Mi）' },
-      { sec: '前奏 Intro', word: '♫ 前奏4', note: 'G4', key: 'G', phrase: '（低音下行 Si）' },
-      { sec: '前奏 Intro', word: '♫ 前奏5', note: 'B4', key: 'J', phrase: '（留白空拍）' },
-      { sec: '前奏 Intro', word: '♫ 前奏6', note: 'E4', key: 'D', phrase: '（準備進歌）' },
+      { sec: '前奏 Intro', word: '♫ 前奏1', note: 'Ab4 (降La)', key: 'Y', phrase: '（鋼琴原版前奏）' },
+      { sec: '前奏 Intro', word: '♫ 前奏2', note: 'Eb5 (高音降Re)', key: 'P', phrase: '（高音透明感）' },
+      { sec: '前奏 Intro', word: '♫ 前奏3', note: 'F5 (高音Fa)', key: "'", phrase: '（空靈旋律）' },
+      { sec: '前奏 Intro', word: '♫ 前奏4', note: 'Ab4 (降La)', key: 'Y', phrase: '（低音下行）' },
+      { sec: '前奏 Intro', word: '♫ 前奏5', note: 'C5 (高音Do)', key: 'K', phrase: '（空拍留白）' },
+      { sec: '前奏 Intro', word: '♫ 前奏6', note: 'F4 (Fa)', key: 'F', phrase: '（準備進歌）' },
 
       // === 主歌 1 VERSE 1 ===
-      { sec: '主歌 1', word: '不', note: 'D4', key: 'S', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '要', note: 'E4', key: 'D', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '說', note: 'E4', key: 'D', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '他', note: 'C4', key: 'A', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '已', note: 'D4', key: 'S', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '遠', note: 'E4', key: 'D', phrase: '不要說 他已遠走' },
-      { sec: '主歌 1', word: '走', note: 'G4', key: 'G', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '不', note: 'Eb4 (降Re)', key: 'E', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '要', note: 'F4 (Fa)', key: 'F', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '說', note: 'F4 (Fa)', key: 'F', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '他', note: 'Db4 (降Do)', key: 'W', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '已', note: 'Eb4 (降Re)', key: 'E', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '遠', note: 'F4 (Fa)', key: 'F', phrase: '不要說 他已遠走' },
+      { sec: '主歌 1', word: '走', note: 'Ab4 (降La)', key: 'Y', phrase: '不要說 他已遠走' },
 
-      { sec: '主歌 1', word: '而', note: 'C4', key: 'A', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '我', note: 'D4', key: 'S', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '卻', note: 'E4', key: 'D', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '停', note: 'C4', key: 'A', phrase: '而我卻停留' },
-      { sec: '主歌 1', word: '留', note: 'C4', key: 'A', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '而', note: 'Db4 (降Do)', key: 'W', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '我', note: 'Eb4 (降Re)', key: 'E', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '卻', note: 'F4 (Fa)', key: 'F', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '停', note: 'Db4 (降Do)', key: 'W', phrase: '而我卻停留' },
+      { sec: '主歌 1', word: '留', note: 'Db4 (降Do)', key: 'W', phrase: '而我卻停留' },
 
-      { sec: '主歌 1', word: '多', note: 'C4', key: 'A', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '少', note: 'D4', key: 'S', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '等', note: 'E4', key: 'D', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '候', note: 'G4', key: 'G', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '落', note: 'E4', key: 'D', phrase: '多少等候 落空' },
-      { sec: '主歌 1', word: '空', note: 'D4', key: 'S', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '多', note: 'Db4 (降Do)', key: 'W', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '少', note: 'Eb4 (降Re)', key: 'E', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '等', note: 'F4 (Fa)', key: 'F', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '候', note: 'Ab4 (降La)', key: 'Y', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '落', note: 'F4 (Fa)', key: 'F', phrase: '多少等候 落空' },
+      { sec: '主歌 1', word: '空', note: 'Eb4 (降Re)', key: 'E', phrase: '多少等候 落空' },
 
-      { sec: '主歌 1', word: '多', note: 'C4', key: 'A', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '少', note: 'D4', key: 'S', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '寂', note: 'E4', key: 'D', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '寞', note: 'G4', key: 'G', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '滲', note: 'E4', key: 'D', phrase: '多少寂寞 滲透' },
-      { sec: '主歌 1', word: '透', note: 'D4', key: 'S', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '多', note: 'Db4 (降Do)', key: 'W', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '少', note: 'Eb4 (降Re)', key: 'E', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '寂', note: 'F4 (Fa)', key: 'F', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '寞', note: 'Ab4 (降La)', key: 'Y', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '滲', note: 'F4 (Fa)', key: 'F', phrase: '多少寂寞 滲透' },
+      { sec: '主歌 1', word: '透', note: 'Eb4 (降Re)', key: 'E', phrase: '多少寂寞 滲透' },
 
       // === 主歌 2 VERSE 2 ===
-      { sec: '主歌 2', word: '我', note: 'D4', key: 'S', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '想', note: 'E4', key: 'D', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '走', note: 'E4', key: 'D', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '但', note: 'C4', key: 'A', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '始', note: 'D4', key: 'S', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '終', note: 'E4', key: 'D', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '埋', note: 'G4', key: 'G', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '沒', note: 'E4', key: 'D', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '漩', note: 'D4', key: 'S', phrase: '我想走 但始終埋沒 漩渦' },
-      { sec: '主歌 2', word: '渦', note: 'C4', key: 'A', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '我', note: 'Eb4 (降Re)', key: 'E', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '想', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '走', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '但', note: 'Db4 (降Do)', key: 'W', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '始', note: 'Eb4 (降Re)', key: 'E', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '終', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '埋', note: 'Ab4 (降La)', key: 'Y', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '沒', note: 'F4 (Fa)', key: 'F', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '漩', note: 'Eb4 (降Re)', key: 'E', phrase: '我想走 但始終埋沒 漩渦' },
+      { sec: '主歌 2', word: '渦', note: 'Db4 (降Do)', key: 'W', phrase: '我想走 但始終埋沒 漩渦' },
 
-      { sec: '主歌 2', word: '疲', note: 'C4', key: 'A', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '憊', note: 'D4', key: 'S', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '抹', note: 'E4', key: 'D', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '去', note: 'G4', key: 'G', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '自', note: 'E4', key: 'D', phrase: '疲憊抹去自我' },
-      { sec: '主歌 2', word: '我', note: 'D4', key: 'S', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '疲', note: 'Db4 (降Do)', key: 'W', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '憊', note: 'Eb4 (降Re)', key: 'E', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '抹', note: 'F4 (Fa)', key: 'F', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '去', note: 'Ab4 (降La)', key: 'Y', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '自', note: 'F4 (Fa)', key: 'F', phrase: '疲憊抹去自我' },
+      { sec: '主歌 2', word: '我', note: 'Eb4 (降Re)', key: 'E', phrase: '疲憊抹去自我' },
 
-      { sec: '主歌 2', word: '無', note: 'C4', key: 'A', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '奈', note: 'D4', key: 'S', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '擊', note: 'E4', key: 'D', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '潰', note: 'G4', key: 'G', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '從', note: 'A4', key: 'H', phrase: '無奈擊潰從容' },
-      { sec: '主歌 2', word: '容', note: 'G4', key: 'G', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '無', note: 'Db4 (降Do)', key: 'W', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '奈', note: 'Eb4 (降Re)', key: 'E', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '擊', note: 'F4 (Fa)', key: 'F', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '潰', note: 'Ab4 (降La)', key: 'Y', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '從', note: 'Bb4 (降Si)', key: 'U', phrase: '無奈擊潰從容' },
+      { sec: '主歌 2', word: '容', note: 'Ab4 (降La)', key: 'Y', phrase: '無奈擊潰從容' },
 
-      { sec: '主歌 2', word: '真', note: 'G4', key: 'G', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '正', note: 'E4', key: 'D', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '失', note: 'D4', key: 'S', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '去', note: 'C4', key: 'A', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '的', note: 'D4', key: 'S', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '比', note: 'E4', key: 'D', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '想', note: 'D4', key: 'S', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '像', note: 'D4', key: 'S', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '更', note: 'E4', key: 'D', phrase: '真正失去的比想像更多' },
-      { sec: '主歌 2', word: '多', note: 'D4', key: 'S', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '真', note: 'Ab4 (降La)', key: 'Y', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '正', note: 'F4 (Fa)', key: 'F', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '失', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '去', note: 'Db4 (降Do)', key: 'W', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '的', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '比', note: 'F4 (Fa)', key: 'F', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '想', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '像', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '更', note: 'F4 (Fa)', key: 'F', phrase: '真正失去的比想像更多' },
+      { sec: '主歌 2', word: '多', note: 'Eb4 (降Re)', key: 'E', phrase: '真正失去的比想像更多' },
 
       // === 導歌 PRE-CHORUS ===
-      { sec: '導歌 Pre-Chorus', word: '黑', note: 'E4', key: 'D', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '夜', note: 'E4', key: 'D', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '失', note: 'E4', key: 'D', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '眠', note: 'E4', key: 'D', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '簇', note: 'G#4', key: 'Y', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '擁', note: 'G#4', key: 'Y', phrase: '黑夜失眠簇擁' },
-      { sec: '導歌 Pre-Chorus', word: '內', note: 'A4', key: 'H', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '心', note: 'A4', key: 'H', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '喧', note: 'G4', key: 'G', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '囂', note: 'E4', key: 'D', phrase: '內心喧囂煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '煩', note: 'D4', key: 'S', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '悶', note: 'C4', key: 'A', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '的', note: 'D4', key: 'S', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '生', note: 'E4', key: 'D', phrase: '煩悶的生活' },
-      { sec: '導歌 Pre-Chorus', word: '活', note: 'D4', key: 'S', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '黑', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '夜', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '失', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '眠', note: 'F4 (Fa)', key: 'F', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '簇', note: 'A4 (La)', key: 'H', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '擁', note: 'A4 (La)', key: 'H', phrase: '黑夜失眠簇擁' },
+      { sec: '導歌 Pre-Chorus', word: '內', note: 'Bb4 (降Si)', key: 'U', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '心', note: 'Bb4 (降Si)', key: 'U', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '喧', note: 'Ab4 (降La)', key: 'Y', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '囂', note: 'F4 (Fa)', key: 'F', phrase: '內心喧囂煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '煩', note: 'Eb4 (降Re)', key: 'E', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '悶', note: 'Db4 (降Do)', key: 'W', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '的', note: 'Eb4 (降Re)', key: 'E', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '生', note: 'F4 (Fa)', key: 'F', phrase: '煩悶的生活' },
+      { sec: '導歌 Pre-Chorus', word: '活', note: 'Eb4 (降Re)', key: 'E', phrase: '煩悶的生活' },
 
-      { sec: '導歌 Pre-Chorus', word: '一', note: 'E4', key: 'D', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '天', note: 'G4', key: 'G', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '天', note: 'E4', key: 'D', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '晃', note: 'D4', key: 'S', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '過', note: 'C4', key: 'A', phrase: '一天天晃過 難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '難', note: 'C4', key: 'A', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '以', note: 'D4', key: 'S', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '越', note: 'F#4', key: 'T', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '過', note: 'G4', key: 'G', phrase: '難以越過 那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '那', note: 'A4', key: 'H', phrase: '那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '空', note: 'G4', key: 'G', phrase: '那空洞' },
-      { sec: '導歌 Pre-Chorus', word: '洞', note: 'G4', key: 'G', phrase: '那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '一', note: 'F4 (Fa)', key: 'F', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '天', note: 'Ab4 (降La)', key: 'Y', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '天', note: 'F4 (Fa)', key: 'F', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '晃', note: 'Eb4 (降Re)', key: 'E', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '過', note: 'Db4 (降Do)', key: 'W', phrase: '一天天晃過 難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '難', note: 'Db4 (降Do)', key: 'W', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '以', note: 'Eb4 (降Re)', key: 'E', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '越', note: 'G4 (Sol)', key: 'G', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '過', note: 'Ab4 (降La)', key: 'Y', phrase: '難以越過 那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '那', note: 'Bb4 (降Si)', key: 'U', phrase: '那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '空', note: 'Ab4 (降La)', key: 'Y', phrase: '那空洞' },
+      { sec: '導歌 Pre-Chorus', word: '洞', note: 'Ab4 (降La)', key: 'Y', phrase: '那空洞' },
 
       // === 副歌 1 CHORUS 1 ===
-      { sec: '副歌 1', word: '我', note: 'C5', key: 'K', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '一', note: 'C5', key: 'K', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '片', note: 'G4', key: 'G', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '空', note: 'G4', key: 'G', phrase: '我一片空白' },
-      { sec: '副歌 1', word: '白', note: 'G4', key: 'G', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '我', note: 'Db5 (高音降Do)', key: 'O', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '一', note: 'Db5 (高音降Do)', key: 'O', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '片', note: 'Ab4 (降La)', key: 'Y', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '空', note: 'Ab4 (降La)', key: 'Y', phrase: '我一片空白' },
+      { sec: '副歌 1', word: '白', note: 'Ab4 (降La)', key: 'Y', phrase: '我一片空白' },
 
-      { sec: '副歌 1', word: '停', note: 'C5', key: 'K', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '滯', note: 'D5', key: 'L', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '在', note: 'E5', key: ';', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '灰', note: 'C5', key: 'K', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '色', note: 'C5', key: 'K', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '地', note: 'A4', key: 'H', phrase: '停滯在灰色地帶' },
-      { sec: '副歌 1', word: '帶', note: 'A4', key: 'H', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '停', note: 'Db5 (高音降Do)', key: 'O', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '滯', note: 'Eb5 (高音降Re)', key: 'P', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '在', note: 'F5 (高音Fa)', key: "'", phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '灰', note: 'Db5 (高音降Do)', key: 'O', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '色', note: 'Db5 (高音降Do)', key: 'O', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '地', note: 'Bb4 (降Si)', key: 'U', phrase: '停滯在灰色地帶' },
+      { sec: '副歌 1', word: '帶', note: 'Bb4 (降Si)', key: 'U', phrase: '停滯在灰色地帶' },
 
-      { sec: '副歌 1', word: '說', note: 'D5', key: 'L', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '不', note: 'D5', key: 'L', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '出', note: 'D5', key: 'L', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '內', note: 'D5', key: 'L', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '心', note: 'D5', key: 'L', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '感', note: 'C5', key: 'K', phrase: '說不出內心感慨' },
-      { sec: '副歌 1', word: '慨', note: 'C5', key: 'K', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '說', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '不', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '出', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '內', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '心', note: 'Eb5 (高音降Re)', key: 'P', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '感', note: 'Db5 (高音降Do)', key: 'O', phrase: '說不出內心感慨' },
+      { sec: '副歌 1', word: '慨', note: 'Db5 (高音降Do)', key: 'O', phrase: '說不出內心感慨' },
 
-      { sec: '副歌 1', word: '步', note: 'A4', key: 'H', phrase: '步履蹣跚' },
-      { sec: '副歌 1', word: '履', note: 'A4', key: 'H', phrase: '步履蹣跚' },
-      { sec: '副歌 1', word: '蹣', note: 'D5', key: 'L', phrase: '步履蹣跚' },
-      { sec: '副歌 1', word: '跚', note: 'C5', key: 'K', phrase: '步履蹣跚' },
+      { sec: '副歌 1', word: '步', note: 'Bb4 (降Si)', key: 'U', phrase: '步履蹣跚' },
+      { sec: '副歌 1', word: '履', note: 'Bb4 (降Si)', key: 'U', phrase: '步履蹣跚' },
+      { sec: '副歌 1', word: '蹣', note: 'Eb5 (高音降Re)', key: 'P', phrase: '步履蹣跚' },
+      { sec: '副歌 1', word: '跚', note: 'Db5 (高音降Do)', key: 'O', phrase: '步履蹣跚' },
 
-      { sec: '副歌 1', word: '快', note: 'C5', key: 'K', phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '點', note: 'D5', key: 'L', phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '回', note: 'E5', key: ';', phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '來', note: 'C5', key: 'K', phrase: '快點回來 就不哀嘆' },
-      { sec: '副歌 1', word: '就', note: 'D5', key: 'L', phrase: '就不哀嘆' },
-      { sec: '副歌 1', word: '不', note: 'D5', key: 'L', phrase: '就不哀嘆' },
-      { sec: '副歌 1', word: '哀', note: 'C5', key: 'K', phrase: '就不哀嘆' },
-      { sec: '副歌 1', word: '嘆', note: 'C5', key: 'K', phrase: '就不哀嘆' },
+      { sec: '副歌 1', word: '快', note: 'Db5 (高音降Do)', key: 'O', phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '點', note: 'Eb5 (高音降Re)', key: 'P', phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '回', note: 'F5 (高音Fa)', key: "'", phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '來', note: 'Db5 (高音降Do)', key: 'O', phrase: '快點回來 就不哀嘆' },
+      { sec: '副歌 1', word: '就', note: 'Eb5 (高音降Re)', key: 'P', phrase: '就不哀嘆' },
+      { sec: '副歌 1', word: '不', note: 'Eb5 (高音降Re)', key: 'P', phrase: '就不哀嘆' },
+      { sec: '副歌 1', word: '哀', note: 'Db5 (高音降Do)', key: 'O', phrase: '就不哀嘆' },
+      { sec: '副歌 1', word: '嘆', note: 'Db5 (高音降Do)', key: 'O', phrase: '就不哀嘆' },
 
       // === 副歌 2 CHORUS 2 ===
-      { sec: '副歌 2', word: '又', note: 'C5', key: 'K', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '一', note: 'C5', key: 'K', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '段', note: 'G4', key: 'G', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '空', note: 'G4', key: 'G', phrase: '又一段空拍' },
-      { sec: '副歌 2', word: '拍', note: 'G4', key: 'G', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '又', note: 'Db5 (高音降Do)', key: 'O', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '一', note: 'Db5 (高音降Do)', key: 'O', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '段', note: 'Ab4 (降La)', key: 'Y', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '空', note: 'Ab4 (降La)', key: 'Y', phrase: '又一段空拍' },
+      { sec: '副歌 2', word: '拍', note: 'Ab4 (降La)', key: 'Y', phrase: '又一段空拍' },
 
-      { sec: '副歌 2', word: '停', note: 'C5', key: 'K', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '止', note: 'D5', key: 'L', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '在', note: 'E5', key: ';', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '絕', note: 'C5', key: 'K', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '望', note: 'C5', key: 'K', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '塵', note: 'A4', key: 'H', phrase: '停止在絕望塵埃' },
-      { sec: '副歌 2', word: '埃', note: 'A4', key: 'H', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '停', note: 'Db5 (高音降Do)', key: 'O', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '止', note: 'Eb5 (高音降Re)', key: 'P', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '在', note: 'F5 (高音Fa)', key: "'", phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '絕', note: 'Db5 (高音降Do)', key: 'O', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '望', note: 'Db5 (高音降Do)', key: 'O', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '塵', note: 'Bb4 (降Si)', key: 'U', phrase: '停止在絕望塵埃' },
+      { sec: '副歌 2', word: '埃', note: 'Bb4 (降Si)', key: 'U', phrase: '停止在絕望塵埃' },
 
-      { sec: '副歌 2', word: '吹', note: 'D5', key: 'L', phrase: '吹散陰霾 卸下重擔' },
-      { sec: '副歌 2', word: '散', note: 'D5', key: 'L', phrase: '吹散陰霾 卸下重擔' },
-      { sec: '副歌 2', word: '陰', note: 'D5', key: 'L', phrase: '吹散陰霾 卸下重擔' },
-      { sec: '副歌 2', word: '霾', note: 'D5', key: 'L', phrase: '吹散陰霾 卸下重擔' },
+      { sec: '副歌 2', word: '吹', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
+      { sec: '副歌 2', word: '散', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
+      { sec: '副歌 2', word: '陰', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
+      { sec: '副歌 2', word: '霾', note: 'Eb5 (高音降Re)', key: 'P', phrase: '吹散陰霾 卸下重擔' },
 
-      { sec: '副歌 2', word: '卸', note: 'E5', key: ';', phrase: '卸下重擔' },
-      { sec: '副歌 2', word: '下', note: 'D5', key: 'L', phrase: '卸下重擔' },
-      { sec: '副歌 2', word: '重', note: 'C5', key: 'K', phrase: '卸下重擔' },
-      { sec: '副歌 2', word: '擔', note: 'C5', key: 'K', phrase: '卸下重擔' },
+      { sec: '副歌 2', word: '卸', note: 'F5 (高音Fa)', key: "'", phrase: '卸下重擔' },
+      { sec: '副歌 2', word: '下', note: 'Eb5 (高音降Re)', key: 'P', phrase: '卸下重擔' },
+      { sec: '副歌 2', word: '重', note: 'Db5 (高音降Do)', key: 'O', phrase: '卸下重擔' },
+      { sec: '副歌 2', word: '擔', note: 'Db5 (高音降Do)', key: 'O', phrase: '卸下重擔' },
 
-      { sec: '尾奏 Outro', word: '就', note: 'C5', key: 'K', phrase: '就算重來 並非失敗' },
-      { sec: '尾奏 Outro', word: '算', note: 'D5', key: 'L', phrase: '就算重來 並非失敗' },
-      { sec: '尾奏 Outro', word: '重', note: 'E5', key: ';', phrase: '就算重來 並非失敗' },
-      { sec: '尾奏 Outro', word: '來', note: 'G4', key: 'G', phrase: '就算重來 並非失敗' },
+      { sec: '尾奏 Outro', word: '就', note: 'Db5 (高音降Do)', key: 'O', phrase: '就算重來 並非失敗' },
+      { sec: '尾奏 Outro', word: '算', note: 'Eb5 (高音降Re)', key: 'P', phrase: '就算重來 並非失敗' },
+      { sec: '尾奏 Outro', word: '重', note: 'F5 (高音Fa)', key: "'", phrase: '就算重來 並非失敗' },
+      { sec: '尾奏 Outro', word: '來', note: 'Ab4 (降La)', key: 'Y', phrase: '就算重來 並非失敗' },
 
-      { sec: '尾奏 Outro', word: '並', note: 'E4', key: 'D', phrase: '並非失敗' },
-      { sec: '尾奏 Outro', word: '非', note: 'D4', key: 'S', phrase: '並非失敗' },
-      { sec: '尾奏 Outro', word: '失', note: 'C4', key: 'A', phrase: '並非失敗' },
-      { sec: '尾奏 Outro', word: '敗', note: 'C4', key: 'A', phrase: '（留白完結）' },
+      { sec: '尾奏 Outro', word: '並', note: 'F4 (Fa)', key: 'F', phrase: '並非失敗' },
+      { sec: '尾奏 Outro', word: '非', note: 'Eb4 (降Re)', key: 'E', phrase: '並非失敗' },
+      { sec: '尾奏 Outro', word: '失', note: 'Db4 (降Do)', key: 'W', phrase: '並非失敗' },
+      { sec: '尾奏 Outro', word: '敗', note: 'Db4 (降Do)', key: 'W', phrase: '（留白完結）' },
     ];
 
-    // -------------------------------------------------------------
-    // 4. 遊戲狀態與互動
-    // -------------------------------------------------------------
+    // C 調版本（半音平移）
+    const melodyC = melodyDb.map(item => {
+      const shiftMap = {
+        'W': 'A', 'E': 'S', 'F': 'D', 'T': 'F', 'Y': 'G', 'U': 'H', 'K': 'J',
+        'O': 'K', 'P': 'L', "'": ';'
+      };
+      const noteMap = {
+        'Db4 (降Do)': 'C4 (Do)', 'Eb4 (降Re)': 'D4 (Re)', 'F4 (Fa)': 'E4 (Mi)',
+        'Gb4 (降Sol)': 'F4 (Fa)', 'Ab4 (降La)': 'G4 (Sol)', 'A4 (La)': 'G#4 (升Sol)',
+        'Bb4 (降Si)': 'A4 (La)', 'C5 (高音Do)': 'B4 (Si)',
+        'Db5 (高音降Do)': 'C5 (高音Do)', 'Eb5 (高音降Re)': 'D5 (高音Re)', 'F5 (高音Fa)': 'E5 (高音Mi)'
+      };
+      return {
+        sec: item.sec,
+        word: item.word,
+        note: noteMap[item.note] || item.note,
+        key: shiftMap[item.key] || item.key,
+        phrase: item.phrase
+      };
+    });
+
+    let currentDataset = melodyDb;
     let noteIdx = 0;
     let combo = 0;
     let autoTimer = null;
 
-    // 段落快速跳轉
+    // 段落跳轉
     const sectionNav = document.getElementById('sectionNavContainer');
     const sections = [
       { name: '前奏 Intro', idx: 0 },
@@ -830,14 +851,13 @@
     });
 
     function updateUI() {
-      const item = melodyNotes[noteIdx];
-      const k = keyMap[item.key];
+      const item = currentDataset[noteIdx];
 
       // 更新進度
-      const pct = Math.round((noteIdx / (melodyNotes.length - 1)) * 100);
+      const pct = Math.round((noteIdx / (currentDataset.length - 1)) * 100);
       document.getElementById('progressBar').style.width = `${pct}%`;
       document.getElementById('lblProgressPct').textContent = `${pct}%`;
-      document.getElementById('lblSectionProgress').textContent = `段落：${item.sec} (${noteIdx + 1}/${melodyNotes.length})`;
+      document.getElementById('lblSectionProgress').textContent = `段落：${item.sec} (${noteIdx + 1}/${currentDataset.length})`;
 
       // 更新段落按鈕
       document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
@@ -847,7 +867,7 @@
         if (b) b.classList.add('active');
       }
 
-      // 高亮當前字詞在歌詞中的位置
+      // 歌詞當前字高亮
       const phraseChars = item.phrase.split('');
       const lineHtml = phraseChars.map(c => {
         if (c === item.word) return `<span class="active-char">${c}</span>`;
@@ -856,15 +876,14 @@
       document.getElementById('lblPhraseLine').innerHTML = lineHtml;
 
       document.getElementById('lblWord').textContent = item.word;
-      document.getElementById('lblNote').textContent = `${item.solfege || ''} (${item.note})`;
+      document.getElementById('lblNote').textContent = item.note;
       document.getElementById('keyBadge').textContent = item.key;
       document.getElementById('comboCount').textContent = combo;
 
-      // 下一個音提示預覽
-      if (noteIdx < melodyNotes.length - 1) {
-        const next = melodyNotes[noteIdx + 1];
-        const nextK = keyMap[next.key];
-        document.getElementById('lblNextPreview').textContent = `下一個字：${next.word} (${nextK ? nextK.solfege : ''} / ${next.key})`;
+      // 下一個音提示
+      if (noteIdx < currentDataset.length - 1) {
+        const next = currentDataset[noteIdx + 1];
+        document.getElementById('lblNextPreview').textContent = `下一個字：${next.word} (${next.note.split(' ')[0]} / ${next.key})`;
       } else {
         document.getElementById('lblNextPreview').textContent = '全曲結束！🎉';
       }
@@ -881,7 +900,7 @@
       stage.classList.add('success-flash');
       setTimeout(() => stage.classList.remove('success-flash'), 180);
 
-      if (noteIdx < melodyNotes.length - 1) {
+      if (noteIdx < currentDataset.length - 1) {
         noteIdx++;
       } else {
         noteIdx = 0;
@@ -894,17 +913,17 @@
       const k = keyMap[char];
       if (!k) return;
 
-      const target = melodyNotes[noteIdx];
+      const target = currentDataset[noteIdx];
       const el = document.getElementById(`key-${k.key}`);
       if (el) {
         el.classList.add('active');
         setTimeout(() => el.classList.remove('active'), 180);
       }
 
-      // 彈奏純粹鋼琴音色
+      // 彈奏純粹鋼琴音
       playPurePianoNote(k.freq);
 
-      // 按對目標音，自動推進下一個音符
+      // 按對目標音，推進
       if (char === target.key) {
         advanceNote();
       }
@@ -916,29 +935,38 @@
       if (keyMap[char]) pressKey(char);
     });
 
-    // 模式切換
-    document.getElementById('btnModeMelody').addEventListener('click', function() {
-      clearInterval(autoTimer);
-      autoTimer = null;
-      document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
+    // 調性切換
+    document.getElementById('btnKeyDb').addEventListener('click', function() {
       this.classList.add('active');
+      document.getElementById('btnKeyC').classList.remove('active');
+      document.getElementById('badgeKey').textContent = '原調 D♭ 大調 (100% 原聲)';
+      currentDataset = melodyDb;
+      updateUI();
     });
 
-    document.getElementById('btnModeAutoDemo').addEventListener('click', function() {
+    document.getElementById('btnKeyC').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('btnKeyDb').classList.remove('active');
+      document.getElementById('badgeKey').textContent = '白鍵 C 調 (降半音練習)';
+      currentDataset = melodyC;
+      updateUI();
+    });
+
+    // 自動演示
+    const btnAuto = document.getElementById('btnModeAutoDemo');
+    btnAuto.addEventListener('click', function() {
       if (autoTimer) {
         clearInterval(autoTimer);
         autoTimer = null;
         this.classList.remove('active');
-        document.getElementById('btnModeMelody').classList.add('active');
         return;
       }
-      document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
 
       autoTimer = setInterval(() => {
-        const cur = melodyNotes[noteIdx];
+        const cur = currentDataset[noteIdx];
         pressKey(cur.key);
-      }, 500); // 每半秒自動彈奏一個音
+      }, 480);
     });
 
     document.getElementById('btnPrev').addEventListener('click', () => {
@@ -947,7 +975,7 @@
     });
 
     document.getElementById('btnNext').addEventListener('click', () => {
-      noteIdx = Math.min(melodyNotes.length - 1, noteIdx + 1);
+      noteIdx = Math.min(currentDataset.length - 1, noteIdx + 1);
       updateUI();
     });
 

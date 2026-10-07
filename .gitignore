@@ -12,3 +12,4 @@
 *.ses
 *.pyc
 __pycache__/
+.temp_vocal/
